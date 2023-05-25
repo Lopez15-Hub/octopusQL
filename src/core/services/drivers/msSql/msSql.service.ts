@@ -27,13 +27,11 @@ export default class SqlServerService implements DatabaseAdapter {
   async instance(table: string): Promise<QueriesAdapter> {
     try {
       await this.connect();
-
-      return new QueriesService(
-        table,
-        this.keys.database!,
-        new Request(this.driver),
-        true
-      );
+      return new QueriesService({
+        tableName: table,
+        driver: new Request(this.driver),
+        driverType: "mssql",
+      });
     } catch (error) {
       console.error("Error en la conexión:", error);
       throw error;

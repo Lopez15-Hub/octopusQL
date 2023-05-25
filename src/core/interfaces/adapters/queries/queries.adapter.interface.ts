@@ -17,8 +17,7 @@ import { DefinitionQueriesServices } from "../../../services/queries/definition.
 //   or(condition: string): this;
 // }
 export interface QueriesAdapter {
-  search(schema?: string): SearchQueriesService;
+  query(schema?: string): SearchQueriesService;
   auth(): AuthQueriesService;
   modeling(): DefinitionQueriesServices;
-  execute(): Promise<any[]>;
 }

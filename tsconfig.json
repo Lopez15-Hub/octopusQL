@@ -10,6 +10,7 @@
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
     "removeComments": true,
-    "pretty": true
+    "pretty": true,
+    "experimentalDecorators": true
   }
 }

@@ -7,8 +7,8 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author": "Ezequiel López",
+  "license": "MIT",
   "devDependencies": {
     "@types/mssql": "^8.1.2",
     "@types/mysql": "^2.15.21",
@@ -18,5 +18,16 @@
   "dependencies": {
     "mssql": "^9.1.1",
     "mysql": "^2.18.1"
-  }
+  },
+  "directories": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Lopez15-Hub/octopusQL.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Lopez15-Hub/octopusQL/issues"
+  },
+  "homepage": "https://github.com/Lopez15-Hub/octopusQL#readme"
 }

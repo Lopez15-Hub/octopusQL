@@ -1,11 +1,11 @@
-import { SqlColumn, SelectClause } from "../../core";
+import { SqlColumn } from "../../core";
 import { DdlQueries } from "../../interfaces/adapters/queries/ddl.queries.adapter.interface";
 
 export class DefinitionQueriesServices implements DdlQueries {
   execute(): Promise<any> {
     throw new Error("Method not implemented.");
   }
-  create(values: SqlColumn[]): this {
+  create(_: SqlColumn[]): this {
     throw new Error("Method not implemented.");
   }
   alter(): Promise<any> {

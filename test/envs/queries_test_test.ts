@@ -1,6 +1,6 @@
 import { OctopusQL } from "../../src/octopus";
 
-const octopus = new OctopusQL({
+const { getInstanceOf } = new OctopusQL({
   credentials: {
     database: "",
     host: "",
@@ -10,7 +10,8 @@ const octopus = new OctopusQL({
   driver: "mysql",
 });
 
-async function useQ() {
-  const { search } = await octopus.getInstanceOf("persons");
-  search().select({ values: "*" }).where("").execute();
-}
+async () => {
+  const { query } = await getInstanceOf("persons");
+  const { select } = query();
+  select({ values: "*" }).where("").execute();
+};

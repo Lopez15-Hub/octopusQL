@@ -2,17 +2,22 @@ import { SelectClause } from "../../core";
 import { DmlQueries } from "../../interfaces/adapters/queries/dml.queries.adapter.interface";
 import ConditionalsQueriesService from "./conditionals.service";
 import { SearchOptions } from "../../interfaces/database/queriesOptions/search.options.interface";
+import { Driver } from "../../types/drivers/drivers.types";
 
 export class SearchQueriesService implements DmlQueries {
-  queryString: any;
-  tableName: string;
-  schema?: string;
-  useSchema?: boolean;
+  private queryString: any;
+  private tableName: string;
+  private schema?: string;
+  private driver: any;
+  private driverType: Driver;
+  private useSchema?: boolean;
   constructor(options: SearchOptions) {
-    const { tableName, useSchema, schema } = options;
+    const { tableName, useSchema, schema, driver, driverType } = options;
     this.tableName = tableName;
     this.queryString = "";
     this.useSchema = useSchema;
+    this.driver = driver;
+    this.driverType = driverType;
     if (!useSchema && schema) {
       throw new Error(
         "Error: Cannot provide a schema when useSchema is false."
@@ -30,14 +35,22 @@ export class SearchQueriesService implements DmlQueries {
     } ${values} FROM  ${this.useSchema ? this.schema : this.tableName}.${
       this.tableName
     }`;
-    return new ConditionalsQueriesService(this.queryString);
+    return new ConditionalsQueriesService({
+      queryString: this.queryString,
+      driver: this.driver,
+      useMsDriver: this.driverType == "mssql" ? true : false,
+    });
   }
 
   delete() {
     this.queryString = `DELETE FROM ${
       this.useSchema ? "dbo" : this.tableName
     }.${this.tableName}`;
-    return new ConditionalsQueriesService(this.queryString);
+    return new ConditionalsQueriesService({
+      queryString: this.queryString,
+      driver: this.driver,
+      useMsDriver: this.driverType == "mssql" ? true : false,
+    });
   }
 
   update(columns: Object) {
@@ -48,7 +61,11 @@ export class SearchQueriesService implements DmlQueries {
     this.queryString = `UPDATE ${this.useSchema ? "dbo" : this.tableName}.${
       this.tableName
     } SET ${setClause} `;
-    return new ConditionalsQueriesService(this.queryString);
+    return new ConditionalsQueriesService({
+      queryString: this.queryString,
+      driver: this.driver,
+      useMsDriver: this.driverType == "mssql" ? true : false,
+    });
   }
 
   insert(data: Object) {
@@ -60,16 +77,32 @@ export class SearchQueriesService implements DmlQueries {
     this.queryString = `INSERT INTO ${
       this.useSchema ? "dbo" : this.tableName
     }.${this.tableName} ${columns} VALUES ${values}  `;
-    return new ConditionalsQueriesService(this.queryString);
+    return new ConditionalsQueriesService({
+      queryString: this.queryString,
+      driver: this.driver,
+      useMsDriver: this.driverType == "mssql" ? true : false,
+    });
   }
 
   merge() {
-    return new ConditionalsQueriesService(this.queryString);
+    return new ConditionalsQueriesService({
+      queryString: this.queryString,
+      driver: this.driver,
+      useMsDriver: this.driverType == "mssql" ? true : false,
+    });
   }
   explainPlan() {
-    return new ConditionalsQueriesService(this.queryString);
+    return new ConditionalsQueriesService({
+      queryString: this.queryString,
+      driver: this.driver,
+      useMsDriver: this.driverType == "mssql" ? true : false,
+    });
   }
   lockTable() {
-    return new ConditionalsQueriesService(this.queryString);
+    return new ConditionalsQueriesService({
+      queryString: this.queryString,
+      driver: this.driver,
+      useMsDriver: this.driverType == "mssql" ? true : false,
+    });
   }
 }
