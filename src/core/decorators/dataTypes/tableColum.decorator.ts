@@ -1,17 +1,18 @@
 import { TableColumn } from "../../interfaces/decorators/tableColumn.interface";
 
-export function TableColumn({ columnName: name, type, length }: TableColumn) {
+export function TableColumn({ type, length }: TableColumn) {
   return function (target: any, propertyKey: string) {
-    // Obtener el descriptor de la propiedad
-    const descriptor = Object.getOwnPropertyDescriptor(target, propertyKey);
+    let prop = target[propertyKey];
 
-    // Modificar el descriptor para agregar el tipo "VARCHAR" y la longitud
+    const getter = () => prop;
+    const setProperties = () => {
+      prop = `${propertyKey} ${type} ${length ? `(${length})` : ""}`;
+    };
     Object.defineProperty(target, propertyKey, {
-      ...descriptor,
-      writable: true,
       configurable: true,
       enumerable: true,
-      value: `${name} ${type}(${length})`,
+      get: getter,
+      set: setProperties,
     });
   };
 }

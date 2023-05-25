@@ -4,7 +4,7 @@ exports.AuthQueriesService = void 0;
 var AuthQueriesService = (function () {
     function AuthQueriesService() {
     }
-    AuthQueriesService.prototype.grant = function (values) {
+    AuthQueriesService.prototype.grant = function (_) {
         throw new Error("Method not implemented.");
     };
     AuthQueriesService.prototype.revoke = function () {

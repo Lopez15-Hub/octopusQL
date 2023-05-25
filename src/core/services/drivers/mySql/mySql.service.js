@@ -1,24 +1,28 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var mysql_1 = require("mysql");
+var mysql = require("mysql");
 var queries_service_1 = require("../../queries/queries.service");
 var MySqlService = (function () {
     function MySqlService(keys) {
         var _this = this;
         this.keys = keys;
         this.instance = function (table) {
-            return new queries_service_1.default(table, _this.keys.database, _this.driver);
+            return new queries_service_1.default({
+                driver: _this.driver,
+                driverType: "mysql",
+                tableName: table,
+            });
         };
         this.close = function () { return _this.driver.end(); };
-        this.driver = mysql_1.default.createConnection({
+        this.driver = mysql.createConnection({
             database: keys.database,
             host: keys.host,
             port: keys.port,
             password: keys.password,
             user: keys.user,
         });
-        this.tableName = '';
-        this.queryString = '';
+        this.tableName = "";
+        this.queryString = "";
     }
     MySqlService.prototype.connect = function () {
         try {

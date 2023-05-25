@@ -2,7 +2,7 @@ import { SqlColumn } from "../../core";
 import { DclQueries } from "../../interfaces/adapters/queries/dcl.queries.adapter.interface";
 
 export class AuthQueriesService implements DclQueries {
-  grant(values: SqlColumn[]): this {
+  grant(_: SqlColumn[]): this {
     throw new Error("Method not implemented.");
   }
   revoke(): Promise<any> {
