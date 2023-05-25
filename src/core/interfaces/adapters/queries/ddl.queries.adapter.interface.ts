@@ -1,8 +1,8 @@
-import { SqlColumn } from "../../database/parts/parts.interface";
+import { CreateClause } from "../../database/clauses/create.clause.interface";
 
 export interface DdlQueries {
   execute(): Promise<any>;
-  create(values: SqlColumn[]): this;
+  create(options: CreateClause): Promise<void>;
   alter(): Promise<any>;
   drop(): this;
   rename(): this;
