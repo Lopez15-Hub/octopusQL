@@ -93,7 +93,6 @@ export class DefinitionQueriesServices implements DdlQueries {
 
       if (code == "ER_TABLE_EXISTS_ERROR") {
         const newColumns = await this.convertNewColumns(model!, schema);
-        console.log(newColumns);
         if (newColumns.length > 0) {
           await this.alter({ columns: newColumns, model: model!, schema });
         }
