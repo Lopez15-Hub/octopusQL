@@ -1,8 +1,7 @@
 import { DriverService } from "../types/drivers/driver.service.types";
 
 export class Schema {
-  constructor(driver: DriverService) {
-    this.construct(driver);
+  constructor() {
   }
 
   async construct(_: DriverService) {}

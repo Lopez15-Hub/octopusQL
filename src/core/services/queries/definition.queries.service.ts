@@ -1,4 +1,5 @@
 import { DdlQueries } from "../../interfaces/adapters/queries/ddl.queries.adapter.interface";
+import { AlterClause } from "../../interfaces/database/clauses/alter.clause.interface";
 import { CreateClause } from "../../interfaces/database/clauses/create.clause.interface";
 import { QueriesOptions } from "../../interfaces/database/options/queries.options.interface";
 import { Driver } from "../../types/drivers/drivers.types";
@@ -7,13 +8,11 @@ export class DefinitionQueriesServices implements DdlQueries {
   private queryString: string;
   private driver: any;
   private driverType: Driver;
-  private schema?: string;
   constructor(options: QueriesOptions) {
     const { driver, driverType } = options;
     this.queryString = "";
     this.driverType = driverType;
     this.driver = driver;
-
   }
 
   async execute(): Promise<any[]> {
@@ -31,12 +30,55 @@ export class DefinitionQueriesServices implements DdlQueries {
       });
     });
   }
+
+  private async getExistingColumns(
+    tableName: string,
+    schema?: string
+  ): Promise<string[]> {
+    this.queryString = `SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '${tableName}' ${
+      schema ? `AND TABLE_SCHEMA = '${schema}'` : ""
+    };`;
+    const result = await this.execute();
+    return result.map((row: any) => row.COLUMN_NAME);
+  }
+  private async convertNewColumns(model: Object, schema?: string) {
+    const propertyKeys = Object.getOwnPropertyNames(model);
+    const existingColumns = await this.getExistingColumns(
+      model!.constructor.name,
+      schema
+    );
+
+    const filterColumns = propertyKeys.filter(
+      (propertyName) => !existingColumns.includes(propertyName)
+    );
+
+    const columns = [];
+    for (const key of filterColumns) {
+      const metadata: string = Reflect.getMetadata(key, model!, key);
+      columns.push(`ADD COLUMN ${metadata.replace("  ", " ")}`);
+    }
+    return columns;
+  }
+
+  private extractDataFromModel(model: Object, alter?: boolean) {
+    const propertyKeys = Object.getOwnPropertyNames(model);
+    const columns = [];
+    for (const key of propertyKeys) {
+      const metadata: string = Reflect.getMetadata(key, model, key);
+      columns.push(
+        `${alter ? "ADD COLUMN " : ""}${metadata.replace("  ", " ")}`
+      );
+    }
+    return columns;
+  }
   async create(options: CreateClause): Promise<void> {
-    const { model, type, viewQuery, dbOrViewName } = options;
+    const { model, type, viewQuery, dbOrViewName, schema } = options;
+
     if (model && type == "TABLE") {
-      this.queryString = `CREATE ${type} IF NOT EXISTS ${
-        this.schema ? this.schema + "." : ""
-      } ${model.constructor.name} ${model} `;
+      const columns = this.extractDataFromModel(model, false);
+      this.queryString = `CREATE ${type} ${schema ? schema + "." : ""} ${
+        model.constructor.name
+      } (${columns});`;
     }
     if (type == "DATABASE") {
       this.queryString = `CREATE ${type}  IF NOT EXISTS ${dbOrViewName}`;
@@ -44,9 +86,34 @@ export class DefinitionQueriesServices implements DdlQueries {
     if (type == "VIEW") {
       this.queryString = `CREATE ${type}  IF NOT EXISTS ${dbOrViewName} AS ${viewQuery}`;
     }
+    try {
+      await this.execute();
+    } catch (error: any) {
+      const { code } = error;
+
+      if (code == "ER_TABLE_EXISTS_ERROR") {
+        const newColumns = await this.convertNewColumns(model!, schema);
+        console.log(newColumns);
+        if (newColumns.length > 0) {
+          await this.alter({ columns: newColumns, model: model!, schema });
+        }
+      } else {
+        console.log("Ha ocurrido un error Intentando crear: ", type, code);
+      }
+    }
   }
-  alter(): Promise<any> {
-    throw new Error("Method not implemented.");
+  async alter(options: AlterClause): Promise<any> {
+    const { columns, model, schema } = options;
+    this.queryString = `ALTER TABLE ${schema ? schema + "." : ""}${
+      model.constructor.name
+    } ${columns} `;
+    try {
+      await this.execute();
+      console.log("Columnas actualizadas");
+    } catch (error: any) {
+      const { code } = error;
+      console.log("Ha ocurrido un error Intentando alterar: ", code);
+    }
   }
   drop(): this {
     throw new Error("Method not implemented.");

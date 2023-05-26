@@ -1,50 +1,48 @@
-import { SqlColumn } from "./core/decorators/dataTypes/sqlColumn.decorator";
+import "reflect-metadata";
+import { SqlColumn } from "./core/decorators/column/sqlColumn.decorator";
 import { Schema } from "./core/model/schema.model";
 import { OctopusQL } from "./octopus";
 
 export class Person extends Schema {
-  @SqlColumn({
-    length: 10,
-    type: "INT",
-    autoIncrement: true,
-    notNull: true,
-    pk: true,
-  })
+  @SqlColumn({ type: "INT", pk: true, autoIncrement: true })
   id_person: number = 0;
 
-  @SqlColumn({ type: "TEXT", notNull: true })
+  @SqlColumn({ type: "TEXT" })
   apellido: string = "";
-  @SqlColumn({ length: 255, type: "VARCHAR", notNull: true })
+  @SqlColumn({ type: "TEXT" })
+  account: string = "";
+
+  @SqlColumn({ length: 255, type: "VARCHAR" })
   dni: string = "";
+  @SqlColumn({ length: 255, type: "VARCHAR" })
+  rodeo: string = "";
 }
 
-// const mySqlKeys = {
-//   database: "bdpos",
-//   host: "localhost",
-//   password: "Trauko1163Meth",
-//   user: "root",
-// };
-const msSqlKeys = {
-  database: "bdpos",
-  host: "paivae-methodo.database.windows.net",
-  password: "dB8uQGX8pXVy5m8",
-  user: "emma",
+const mySqlKeys = {
+  database: "db_test",
+  host: "localhost",
+  password: "Trauko1163Meth",
+  user: "root",
 };
+// const msSqlKeys = {
+//   database: "bdpos",
+//   host: "paivae-methodo.database.windows.net",
+//   password: "dB8uQGX8pXVy5m8",
+//   user: "emma",
+// };
 
 const octopus = new OctopusQL({
-  driverType: "mssql",
-  credentials: msSqlKeys,
+  driverType: "mysql",
+  credentials: mySqlKeys,
 });
 
 async function getReservations() {
-  const { query } = await octopus.instance;
-  const res = await query
-    .select({
-      from: { table: "Reservations" },
-      values: "*",
-    }).execute();
-    
-    console.log(res);
+  const { modeling } = await octopus.instance;
+  try {
+    await modeling.create({ type: "TABLE", model: new Person() });
+  } catch (error) {
+    console.log(error);
+  }
 }
 
 getReservations();
