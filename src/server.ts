@@ -1,4 +1,3 @@
-import { Person } from "../test/classes/person";
 import { OctopusQL } from "./octopus";
 
 const mySqlKeys = {
@@ -22,7 +21,7 @@ const octopus = new OctopusQL({
 async function getReservations() {
   const { modeling } = await octopus.instance;
   try {
-    await modeling.create({ type: "TABLE", model: new Person() });
+    await modeling.create({ type: "TABLE"});
   } catch (error) {
     console.log(error);
   }

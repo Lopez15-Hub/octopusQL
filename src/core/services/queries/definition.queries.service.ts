@@ -4,6 +4,7 @@ import { AlterClause } from "../../interfaces/database/clauses/alter.clause.inte
 import { CreateClause } from "../../interfaces/database/clauses/create.clause.interface";
 import { QueriesOptions } from "../../interfaces/database/options/queries.options.interface";
 import { Driver } from "../../types/drivers/drivers.types";
+import { LogService } from "../log/log.service";
 
 export class DefinitionQueriesServices implements DdlQueries {
   private queryString: string;
@@ -73,7 +74,7 @@ export class DefinitionQueriesServices implements DdlQueries {
     return columns;
   }
   async create(options: CreateClause): Promise<void> {
-    const { model, type, viewQuery, dbOrViewName, schema } = options;
+    const { model, type, viewQuery, dbOrViewName, schema, newUser } = options;
 
     if (model && type == "TABLE") {
       const columns = this.extractDataFromModel(model, false);
@@ -87,10 +88,25 @@ export class DefinitionQueriesServices implements DdlQueries {
     if (type == "VIEW") {
       this.queryString = `CREATE ${type}  IF NOT EXISTS ${dbOrViewName} AS ${viewQuery}`;
     }
+    if (type == "USER") {
+      const { password, username, host } = newUser!;
+      if (this.driverType == "mysql") {
+        this.queryString = `CREATE ${type}  ${username}@${host} IDENTIFIED BY ${password}`;
+      }
+      if (this.driverType == "mssql") {
+        this.queryString = `CREATE LOGIN  ${username}  WITH PASSWORD = ${password}`;
+      }
+    }
     try {
       await this.execute();
     } catch (error: any) {
       const { code } = error;
+      if (code == "ER_EMPTY_QUERY") {
+        return LogService.show({
+          message: "You must specify a [ MODEL ]",
+          type: "WARNING",
+        });
+      }
 
       if (code == "ER_TABLE_EXISTS_ERROR") {
         const newColumns = await this.convertNewColumns(model!, schema);
@@ -98,10 +114,10 @@ export class DefinitionQueriesServices implements DdlQueries {
           await this.alter({ columns: newColumns, model: model!, schema });
         }
       } else {
-        console.log("Ha ocurrido un error Intentando crear: ",type, code);
-      }
-      if(code =="ER_EMPTY_QUERY"){
-        console.log("Debes especificar un modelo.")
+        return LogService.show({
+          message: `An ocurred error creating ${type}: ${code}`,
+          type: "ERROR",
+        });
       }
     }
   }
