@@ -2,7 +2,7 @@ import { SqlColumn } from "./core/decorators/dataTypes/sqlColumn.decorator";
 import { Schema } from "./core/model/schema.model";
 import { OctopusQL } from "./octopus";
 
-class Person extends Schema {
+export class Person extends Schema {
   @SqlColumn({
     length: 10,
     type: "INT",
@@ -18,10 +18,33 @@ class Person extends Schema {
   dni: string = "";
 }
 
+// const mySqlKeys = {
+//   database: "bdpos",
+//   host: "localhost",
+//   password: "Trauko1163Meth",
+//   user: "root",
+// };
+const msSqlKeys = {
+  database: "bdpos",
+  host: "paivae-methodo.database.windows.net",
+  password: "dB8uQGX8pXVy5m8",
+  user: "emma",
+};
+
 const octopus = new OctopusQL({
-  driver: "mysql",
+  driverType: "mssql",
+  credentials: msSqlKeys,
 });
 
-octopus.driver?.connect();
+async function getReservations() {
+  const { query } = await octopus.instance;
+  const res = await query
+    .select({
+      from: { table: "Reservations" },
+      values: "*",
+    }).execute();
+    
+    console.log(res);
+}
 
-new Person(octopus.driver!);
+getReservations();

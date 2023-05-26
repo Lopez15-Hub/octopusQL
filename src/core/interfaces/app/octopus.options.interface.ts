@@ -1,8 +1,8 @@
 import { Driver } from "../../types/drivers/drivers.types";
-import { DatabaseAdapter, DatabaseKeys } from "../interfaces";
+import {  DatabaseKeys, QueriesAdapter } from "../interfaces";
 
 export interface OctopusOptions {
   credentials?: DatabaseKeys;
-  customDriver?: DatabaseAdapter;
-  driver: Driver;
+  customDriver?: QueriesAdapter;
+  driverType: Driver;
 }

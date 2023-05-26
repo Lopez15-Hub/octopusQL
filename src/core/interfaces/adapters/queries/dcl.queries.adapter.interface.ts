@@ -1,7 +1,6 @@
-import { SqlColumn } from "../../database/parts/parts.interface";
 
 export interface DclQueries {
-  grant(values: SqlColumn[]): this;
+  grant(): this;
   revoke(): Promise<any>;
   execute(): Promise<any>;
 }

@@ -1,5 +1,5 @@
 import { ConditionalsQueries } from "../../interfaces/adapters/queries/conditionals.queries.adapter.interface";
-import { ConditionalOptions } from "../../interfaces/database/queriesOptions/conditionals.options.interface";
+import { ConditionalOptions } from "../../interfaces/database/options/conditionals.options.interface";
 import { LogicQueriesService } from "./logic.queries.service";
 
 export default class ConditionalsQueriesService implements ConditionalsQueries {
@@ -14,7 +14,11 @@ export default class ConditionalsQueriesService implements ConditionalsQueries {
   }
   where(condition: string) {
     this.queryString = `${this.queryString} WHERE ${condition}`;
-    return new LogicQueriesService(this.queryString);
+    return new LogicQueriesService({
+      driver: this.driver,
+      queryString: this.queryString,
+      useMsDriver: this.useMsDriver,
+    });
   }
 
   async execute(): Promise<any[]> {

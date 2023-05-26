@@ -1,51 +1,37 @@
 import { SelectClause } from "../../core";
 import { DmlQueries } from "../../interfaces/adapters/queries/dml.queries.adapter.interface";
 import ConditionalsQueriesService from "./conditionals.service";
-import { SearchOptions } from "../../interfaces/database/queriesOptions/search.options.interface";
 import { Driver } from "../../types/drivers/drivers.types";
+import { QueriesOptions } from "../../interfaces/database/options/queries.options.interface";
 
 export class SearchQueriesService implements DmlQueries {
   private queryString: any;
-  private tableName: string;
-  private schema?: string;
   private driver: any;
   private driverType: Driver;
-  private useSchema?: boolean;
-  constructor(options: SearchOptions) {
-    const { tableName, useSchema, schema, driver, driverType } = options;
-    this.tableName = tableName;
+  constructor(options: QueriesOptions) {
+    const { driver, driverType } = options;
     this.queryString = "";
-    this.useSchema = useSchema;
     this.driver = driver;
     this.driverType = driverType;
-    if (!useSchema && schema) {
-      throw new Error(
-        "Error: Cannot provide a schema when useSchema is false."
-      );
-    }
-
-    if (useSchema) {
-      this.schema = schema;
-    }
   }
 
-  select({ values, useDistinct = false }: SelectClause) {
+  select({ values, useDistinct = false, from }: SelectClause) {
     this.queryString = `SELECT ${
       useDistinct ? "DISTINCT" : ""
-    } ${values} FROM  ${this.useSchema ? this.schema : this.tableName}.${
-      this.tableName
+    } ${values} FROM ${
+      from.schema ? from.schema + "." + from.table : from.table
     }`;
     return new ConditionalsQueriesService({
       queryString: this.queryString,
       driver: this.driver,
-      useMsDriver: this.driverType == "mssql" ? true : false,
+      useMsDriver: this.driverType == "mssql",
     });
   }
-
+  // todo: Revisar condiciones de schema.
   delete() {
     this.queryString = `DELETE FROM ${
-      this.useSchema ? "dbo" : this.tableName
-    }.${this.tableName}`;
+      "HERE SCHEMA CONDITION" ? "dbo" :""
+    }.${"tablename"}`;
     return new ConditionalsQueriesService({
       queryString: this.queryString,
       driver: this.driver,
@@ -58,8 +44,8 @@ export class SearchQueriesService implements DmlQueries {
       .map(([key, value]) => `${key} = '${value}'`)
       .join(", ");
 
-    this.queryString = `UPDATE ${this.useSchema ? "dbo" : this.tableName}.${
-      this.tableName
+    this.queryString = `UPDATE ${"HERE SCHEMA CONDITION" ? "dbo" :""}.${
+     ""
     } SET ${setClause} `;
     return new ConditionalsQueriesService({
       queryString: this.queryString,
@@ -75,8 +61,8 @@ export class SearchQueriesService implements DmlQueries {
       .join(",")})`;
 
     this.queryString = `INSERT INTO ${
-      this.useSchema ? "dbo" : this.tableName
-    }.${this.tableName} ${columns} VALUES ${values}  `;
+      "HERE SCHEMA CONDITION" ? "dbo" :""
+    }.${"tablename"} ${columns} VALUES ${values}  `;
     return new ConditionalsQueriesService({
       queryString: this.queryString,
       driver: this.driver,

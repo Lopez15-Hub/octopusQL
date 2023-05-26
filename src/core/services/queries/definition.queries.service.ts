@@ -1,36 +1,29 @@
 import { DdlQueries } from "../../interfaces/adapters/queries/ddl.queries.adapter.interface";
 import { CreateClause } from "../../interfaces/database/clauses/create.clause.interface";
-import { DefinitionOptions } from "../../interfaces/database/queriesOptions/definition.options.interface";
+import { QueriesOptions } from "../../interfaces/database/options/queries.options.interface";
+import { Driver } from "../../types/drivers/drivers.types";
 
 export class DefinitionQueriesServices implements DdlQueries {
-  private queryString: any;
+  private queryString: string;
   private driver: any;
-  private useMsDriver?: boolean;
+  private driverType: Driver;
   private schema?: string;
-  constructor(options: DefinitionOptions) {
-    const { useSchema, schema, driver, useMsDriver } = options;
+  constructor(options: QueriesOptions) {
+    const { driver, driverType } = options;
     this.queryString = "";
+    this.driverType = driverType;
     this.driver = driver;
-    this.useMsDriver = useMsDriver;
-    if (!useSchema && schema) {
-      throw new Error(
-        "Error: Cannot provide a schema when useSchema is false."
-      );
-    }
 
-    if (useSchema) {
-      this.schema = schema;
-    }
   }
 
   async execute(): Promise<any[]> {
     return new Promise((resolve, reject) => {
-      this.driver.query(this.queryString, (error: any, rows: any) => {
+      this.driver.query(this.queryString ?? "", (error: any, rows: any) => {
         if (error) {
           reject(error);
           return;
         }
-        if (this.useMsDriver) {
+        if (this.driverType == "mssql") {
           resolve(rows.recordset);
         } else {
           resolve(rows);
@@ -39,11 +32,18 @@ export class DefinitionQueriesServices implements DdlQueries {
     });
   }
   async create(options: CreateClause): Promise<void> {
-    const { model, type } = options;
-    this.queryString = `CREATE ${type} IF NOT EXISTS ${
-      this.schema ? this.schema + "." : ""
-    } ${model.constructor.name} ${model} `;
-    await this.execute();
+    const { model, type, viewQuery, dbOrViewName } = options;
+    if (model && type == "TABLE") {
+      this.queryString = `CREATE ${type} IF NOT EXISTS ${
+        this.schema ? this.schema + "." : ""
+      } ${model.constructor.name} ${model} `;
+    }
+    if (type == "DATABASE") {
+      this.queryString = `CREATE ${type}  IF NOT EXISTS ${dbOrViewName}`;
+    }
+    if (type == "VIEW") {
+      this.queryString = `CREATE ${type}  IF NOT EXISTS ${dbOrViewName} AS ${viewQuery}`;
+    }
   }
   alter(): Promise<any> {
     throw new Error("Method not implemented.");

@@ -5,9 +5,5 @@ export class Schema {
     this.construct(driver);
   }
 
-  async construct(driver: DriverService) {
-    const { modeling } = await driver.instance(this.constructor.name);
-    const { create } = modeling();
-    await create({ model: this, type: "TABLE" });
-  }
+  async construct(_: DriverService) {}
 }

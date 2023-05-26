@@ -1,8 +1,8 @@
-import { DatabaseKeys } from '../../database/keys/keys.interface';
-import { QueriesAdapter } from '../queries/queries.adapter.interface';
+import { QueriesAdapter } from "../../../core";
+import { DatabaseKeys } from "../../database/keys/keys.interface";
 
 export interface DatabaseAdapter {
   readonly keys: DatabaseKeys;
+  readonly instance: QueriesAdapter;
   connect(): void;
-  instance(table: string): Promise<QueriesAdapter> | QueriesAdapter;
 }

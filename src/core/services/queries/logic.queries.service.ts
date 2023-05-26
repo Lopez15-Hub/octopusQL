@@ -1,5 +1,5 @@
 import { LogicQueries } from "../../interfaces/adapters/queries/logic.queries.adapter.interface";
-import { LogicOptions } from "../../interfaces/database/queriesOptions/logic.options.interface";
+import { LogicOptions } from "../../interfaces/database/options/logic.options.interface";
 
 export class LogicQueriesService implements LogicQueries {
   private queryString: any;
@@ -29,42 +29,42 @@ export class LogicQueriesService implements LogicQueries {
   }
 
   and(condition: string) {
-    this.queryString = `${this.queryString} AND ${condition}`;
+    this.queryString = `${this.queryString} AND '${condition}'`;
     return this;
   }
 
   or(condition: string) {
-    this.queryString = `${this.queryString} OR ${condition}`;
+    this.queryString = `${this.queryString} OR '${condition}'`;
     return this;
   }
 
   groupBy(condition: string) {
-    this.queryString = `${this.queryString} GROUP BY ${condition}`;
+    this.queryString = `${this.queryString} GROUP BY '${condition}' `;
     return this;
   }
 
   orderBy(condition: string) {
-    this.queryString = `${this.queryString} ORDER BY ${condition}`;
+    this.queryString = `${this.queryString} ORDER BY '${condition}' `;
     return this;
   }
   lessThan(condition: string): this {
-    this.queryString = `${this.queryString} < ${condition}`;
+    this.queryString = `${this.queryString} < '${condition}'`;
     return this;
   }
   equalsTo(condition: string): this {
-    this.queryString = `${this.queryString} = ${condition}`;
+    this.queryString = `${this.queryString} = '${condition}'`;
     return this;
   }
   notEqualsTo(condition: string): this {
-    this.queryString = `${this.queryString} != ${condition}`;
+    this.queryString = `${this.queryString} != '${condition}'`;
     return this;
   }
   higherThan(condition: string): this {
-    this.queryString = `${this.queryString} > ${condition}`;
+    this.queryString = `${this.queryString} > '${condition}'`;
     return this;
   }
   like(pattern: string): this {
-    this.queryString = `${this.queryString} LIKE ${pattern}`;
+    this.queryString = `${this.queryString} LIKE '${pattern}'`;
     return this;
   }
 }

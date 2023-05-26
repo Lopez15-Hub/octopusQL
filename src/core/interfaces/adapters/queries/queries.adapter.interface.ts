@@ -1,23 +1,9 @@
-import { SearchQueriesService } from "../../../services/queries/search.queries.service";
-import { AuthQueriesService } from "../../../services/queries/auth.queries.service";
-import { DefinitionQueriesServices } from "../../../services/queries/definition.queries.service";
+import { DmlQueries } from "./dml.queries.adapter.interface";
+import { DdlQueries } from "./ddl.queries.adapter.interface";
+import { DclQueries } from "./dcl.queries.adapter.interface";
 
-// export interface QueriesAdapter {
-//   execute(): Promise<any>;
-//   createDatabase(): this;
-//   createTable(values: SqlColumn[]): this;
-//   select({ values, useDistinct }: SelectClause): this;
-//   insert(data: Object): this;
-//   update(columns: Object): this;
-//   delete(): this;
-//   where(condition: string): this;
-//   groupBy(condition: string): this;
-//   orderBy(condition: string): this;
-//   and(condition: string): this;
-//   or(condition: string): this;
-// }
 export interface QueriesAdapter {
-  query(schema?: string): SearchQueriesService;
-  auth(): AuthQueriesService;
-  modeling(): DefinitionQueriesServices;
+  query: DmlQueries;
+  modeling: DdlQueries;
+  auth: DclQueries;
 }

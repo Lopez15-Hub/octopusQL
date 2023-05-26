@@ -1,6 +1,8 @@
 import { Schema } from "../../../model/schema.model";
 
 export interface CreateClause {
-  model: Schema;
+  model?: Schema;
+  dbOrViewName?: string;
+  viewQuery?: string;
   type: "DATABASE" | "TABLE" | "VIEW";
 }
