@@ -45,20 +45,35 @@ export class DefinitionQueriesServices implements DdlQueries {
   }
   private async convertNewColumns(model: Object, schema?: string) {
     const propertyKeys = Object.getOwnPropertyNames(model);
+        const columns = [];
+
     const existingColumns = await this.getExistingColumns(
       model!.constructor.name,
       schema
     );
 
-    const filterColumns = propertyKeys.filter(
-      (propertyName) => !existingColumns.includes(propertyName)
+    const filterExistingColumns = propertyKeys.filter((propertyName) =>
+      !existingColumns.includes(propertyName)
     );
+    const filterNotExistingColumns = existingColumns.filter(
+      (propertyName) => !propertyKeys.includes(propertyName)
+    );
+   for (const columnName of filterNotExistingColumns) {
+     columns.push(`DROP COLUMN ${columnName}`);
+     console.log(`Se eliminará la columna ${columnName} de la tabla.`);
+   }
 
-    const columns = [];
-    for (const key of filterColumns) {
-      const metadata: string = Reflect.getMetadata(key, model!, key);
-      columns.push(`ADD COLUMN ${metadata.replace("  ", " ")}`);
+    for (const columnName of filterExistingColumns) {
+      if (!existingColumns.includes(columnName)) {
+        const metadata: string = Reflect.getMetadata(
+          columnName,
+          model!,
+          columnName
+        );
+        columns.push(`ADD COLUMN ${metadata}`);
+      }
     }
+
     return columns;
   }
 
@@ -110,6 +125,7 @@ export class DefinitionQueriesServices implements DdlQueries {
 
       if (code == "ER_TABLE_EXISTS_ERROR") {
         const newColumns = await this.convertNewColumns(model!, schema);
+        console.log(newColumns);
         if (newColumns.length > 0) {
           await this.alter({ columns: newColumns, model: model!, schema });
         }
@@ -126,6 +142,7 @@ export class DefinitionQueriesServices implements DdlQueries {
     this.queryString = `ALTER TABLE ${schema ? schema + "." : ""}${
       model.constructor.name
     } ${columns} `;
+    console.log(this.queryString);
     try {
       await this.execute();
       console.log("Columnas actualizadas");

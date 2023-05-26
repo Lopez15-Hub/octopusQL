@@ -1,9 +1,10 @@
 import "reflect-metadata";
 import { SqlColumn } from "../../src/core/decorators/column/sqlColumn.decorator";
+import { SqlModel } from "../../src/core/interfaces/database/misc/sqlModel.interface";
 
-export class Person {
+export class Person extends SqlModel {
   @SqlColumn({ type: "INT", pk: true, autoIncrement: true })
-  id_person: number = 0;
+  id_person?: number = 0;
 
   @SqlColumn({ type: "TEXT" })
   apellido: string = "";

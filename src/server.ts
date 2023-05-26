@@ -1,3 +1,4 @@
+import { Person } from "../test/classes/person";
 import { OctopusQL } from "./octopus";
 
 const mySqlKeys = {
@@ -19,10 +20,9 @@ const octopus = new OctopusQL({
 });
 
 async function getReservations() {
-  const { modeling, query} = await octopus.instance;
+  const { modeling } = await octopus.instance;
   try {
-    await modeling.create({ type: "TABLE"});
-    query.explainPlan()
+    await modeling.create({ type: "TABLE", model: new Person() });
   } catch (error) {
     console.log(error);
   }

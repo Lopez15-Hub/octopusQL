@@ -5,7 +5,7 @@ import { Driver } from "../../types/drivers/drivers.types";
 import { QueriesOptions } from "../../interfaces/database/options/queries.options.interface";
 import { DeleteClause } from "../../interfaces/database/clauses/dml/delete.clause.interface";
 import { NotImplemented } from "../../decorators/notImplemented/notImplemented.decorator";
-import { Deprecated } from "../../decorators/deprecated/deprecated.decorator";
+import { UpdateClause } from "../../interfaces/database/clauses/dml/update.clause.interface";
 
 export class ManageQueriesService implements DmlQueries {
   private queryString: any;
@@ -30,7 +30,6 @@ export class ManageQueriesService implements DmlQueries {
       useMsDriver: this.driverType == "mssql",
     });
   }
-  // todo: Revisar condiciones de schema.
   delete({ from }: DeleteClause) {
     this.queryString = `DELETE FROM ${
       from.schema ? from.schema + "." + from.table : from.table
@@ -42,21 +41,22 @@ export class ManageQueriesService implements DmlQueries {
     });
   }
 
-  update(columns: Object) {
-    const setClause = Object.entries(columns)
+  update(options: UpdateClause) {
+    const { from, model } = options;
+    const modelValues = Object.entries(model)
       .map(([key, value]) => `${key} = '${value}'`)
       .join(", ");
 
     this.queryString = `UPDATE ${
-      "HERE SCHEMA CONDITION" ? "dbo" : ""
-    }.${""} SET ${setClause} `;
+      from.schema ? from.schema + "." + from.table : from.table
+    } SET  ${modelValues}`;
     return new ConditionalsQueriesService({
       queryString: this.queryString,
       driver: this.driver,
       useMsDriver: this.driverType == "mssql" ? true : false,
     });
   }
-
+  @NotImplemented
   insert(data: Object) {
     const columns = `(${Object.keys(data).join(",")})`;
     const values = `(${Object.values(data)
@@ -80,7 +80,7 @@ export class ManageQueriesService implements DmlQueries {
       useMsDriver: this.driverType == "mssql" ? true : false,
     });
   }
-  @Deprecated
+  @NotImplemented
   public explainPlan() {
     return new ConditionalsQueriesService({
       queryString: this.queryString,
