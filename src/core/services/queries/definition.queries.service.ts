@@ -1,3 +1,4 @@
+import "reflect-metadata";
 import { DdlQueries } from "../../interfaces/adapters/queries/ddl.queries.adapter.interface";
 import { AlterClause } from "../../interfaces/database/clauses/alter.clause.interface";
 import { CreateClause } from "../../interfaces/database/clauses/create.clause.interface";
@@ -97,7 +98,10 @@ export class DefinitionQueriesServices implements DdlQueries {
           await this.alter({ columns: newColumns, model: model!, schema });
         }
       } else {
-        console.log("Ha ocurrido un error Intentando crear: ", type, code);
+        console.log("Ha ocurrido un error Intentando crear: ",type, code);
+      }
+      if(code =="ER_EMPTY_QUERY"){
+        console.log("Debes especificar un modelo.")
       }
     }
   }

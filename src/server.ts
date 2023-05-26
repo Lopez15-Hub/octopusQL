@@ -1,23 +1,5 @@
-import "reflect-metadata";
-import { SqlColumn } from "./core/decorators/column/sqlColumn.decorator";
+import { Person } from "../test/classes/person";
 import { OctopusQL } from "./octopus";
-
-export class Person {
-  @SqlColumn({ type: "INT", pk: true, autoIncrement: true })
-  id_person: number = 0;
-
-  @SqlColumn({ type: "TEXT" })
-  apellido: string = "";
-  @SqlColumn({ type: "TEXT" })
-  account: string = "";
-
-  @SqlColumn({ length: 255, type: "VARCHAR" })
-  dni: string = "";
-  @SqlColumn({ length: 255, type: "VARCHAR" })
-  contract: string = "";
-  @SqlColumn({ length: 255, type: "VARCHAR" })
-  rodeo: string = "";
-}
 
 const mySqlKeys = {
   database: "db_test",

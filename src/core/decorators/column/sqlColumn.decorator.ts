@@ -1,3 +1,4 @@
+import "reflect-metadata";
 import { SqlColumnProps } from "../../interfaces/decorators/sqlColumn.decorator.props";
 
 export function SqlColumn(options: SqlColumnProps) {
