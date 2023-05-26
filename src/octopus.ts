@@ -8,6 +8,7 @@ import {
 } from "./core/core";
 import { OctopusOptions } from "./core/interfaces/app/octopus.options.interface";
 import { Driver } from "./core/types/drivers/drivers.types";
+import { PrintBefore } from "./core/decorators/logger/printBefore.decorator";
 
 export class OctopusQL {
   instance: Promise<QueriesAdapter>;
@@ -23,20 +24,20 @@ export class OctopusQL {
     }
     this.instance = this.chooseDriver(driverType, credentials!);
   }
-
+  @PrintBefore({
+    message: "Using ",
+    type: "info",
+    functionParams: 0,
+  })
   async chooseDriver(driverType: Driver, credentials: DatabaseKeys) {
     if (driverType == "mysql") {
-      console.log("Database selected: MySql");
       return new MySqlService(credentials!).instance;
     }
     if (driverType == "mssql") {
-      console.log("Database selected: MsSql");
       const mssql = new SqlServerService(credentials!);
       await this.connectToSqlServer(mssql);
       return mssql.instance;
     } else {
-      console.log("Database selected: Custom");
-
       return new MySqlService(credentials!).instance;
     }
   }
