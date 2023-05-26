@@ -5,6 +5,7 @@ import { Driver } from "../../types/drivers/drivers.types";
 import { QueriesOptions } from "../../interfaces/database/options/queries.options.interface";
 import { DeleteClause } from "../../interfaces/database/clauses/dml/delete.clause.interface";
 import { NotImplemented } from "../../decorators/notImplemented/notImplemented.decorator";
+import { Deprecated } from "../../decorators/deprecated/deprecated.decorator";
 
 export class ManageQueriesService implements DmlQueries {
   private queryString: any;
@@ -79,7 +80,7 @@ export class ManageQueriesService implements DmlQueries {
       useMsDriver: this.driverType == "mssql" ? true : false,
     });
   }
-  @NotImplemented
+  @Deprecated
   public explainPlan() {
     return new ConditionalsQueriesService({
       queryString: this.queryString,

@@ -8,7 +8,7 @@ export function Deprecated(
   descriptor.value = function () {
     target;
     LogService.show({
-      message: `The ${key} is deprecated and may be removed in the future.`,
+      message: `The method '${key}' is deprecated and may be removed in the future.`,
       type: "WARNING",
     });
   };

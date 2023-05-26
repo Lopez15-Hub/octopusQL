@@ -103,7 +103,7 @@ export class DefinitionQueriesServices implements DdlQueries {
       const { code } = error;
       if (code == "ER_EMPTY_QUERY") {
         return LogService.show({
-          message: "You must specify a [ MODEL ]",
+          message: "You must specify the [ MODEL ] that you want create.",
           type: "WARNING",
         });
       }
