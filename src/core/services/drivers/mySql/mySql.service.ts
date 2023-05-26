@@ -5,6 +5,7 @@ import {
   QueriesAdapter,
 } from "../../../interfaces/interfaces";
 import MySqlEnviroment from "../../../enviroments/database/mySql/mySql.enviroment";
+import { LogService } from "../../log/log.service";
 
 export default class MySqlService implements DatabaseAdapter {
   private readonly driver: mysql.Connection;
@@ -27,9 +28,16 @@ export default class MySqlService implements DatabaseAdapter {
   async connect() {
     try {
       this.driver.connect();
-      console.log("Base de datos conectada.");
-    } catch (error) {
-      throw new Error(`Error al conectar: ${error}`);
+      LogService.show({
+        message: `Connected to database`,
+        type: "SUCCESS",
+      });
+    } catch (error: any) {
+      const { code } = error;
+      LogService.show({
+        message: `An ocurred error connecting to database: ${code}`,
+        type: "SUCCESS",
+      });
     }
   }
 

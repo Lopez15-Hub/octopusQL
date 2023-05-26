@@ -3,8 +3,10 @@ import { DmlQueries } from "../../interfaces/adapters/queries/dml.queries.adapte
 import ConditionalsQueriesService from "./conditionals.service";
 import { Driver } from "../../types/drivers/drivers.types";
 import { QueriesOptions } from "../../interfaces/database/options/queries.options.interface";
+import { DeleteClause } from "../../interfaces/database/clauses/dml/delete.clause.interface";
+import { NotImplemented } from "../../decorators/notImplemented/notImplemented.decorator";
 
-export class SearchQueriesService implements DmlQueries {
+export class ManageQueriesService implements DmlQueries {
   private queryString: any;
   private driver: any;
   private driverType: Driver;
@@ -28,10 +30,10 @@ export class SearchQueriesService implements DmlQueries {
     });
   }
   // todo: Revisar condiciones de schema.
-  delete() {
+  delete({ from }: DeleteClause) {
     this.queryString = `DELETE FROM ${
-      "HERE SCHEMA CONDITION" ? "dbo" :""
-    }.${"tablename"}`;
+      from.schema ? from.schema + "." + from.table : from.table
+    }`;
     return new ConditionalsQueriesService({
       queryString: this.queryString,
       driver: this.driver,
@@ -44,9 +46,9 @@ export class SearchQueriesService implements DmlQueries {
       .map(([key, value]) => `${key} = '${value}'`)
       .join(", ");
 
-    this.queryString = `UPDATE ${"HERE SCHEMA CONDITION" ? "dbo" :""}.${
-     ""
-    } SET ${setClause} `;
+    this.queryString = `UPDATE ${
+      "HERE SCHEMA CONDITION" ? "dbo" : ""
+    }.${""} SET ${setClause} `;
     return new ConditionalsQueriesService({
       queryString: this.queryString,
       driver: this.driver,
@@ -59,9 +61,9 @@ export class SearchQueriesService implements DmlQueries {
     const values = `(${Object.values(data)
       .map((val) => `'${val}'`)
       .join(",")})`;
-
+    // todo: Complete insert
     this.queryString = `INSERT INTO ${
-      "HERE SCHEMA CONDITION" ? "dbo" :""
+      "HERE SCHEMA CONDITION" ? "dbo" : ""
     }.${"tablename"} ${columns} VALUES ${values}  `;
     return new ConditionalsQueriesService({
       queryString: this.queryString,
@@ -69,7 +71,7 @@ export class SearchQueriesService implements DmlQueries {
       useMsDriver: this.driverType == "mssql" ? true : false,
     });
   }
-
+  @NotImplemented
   merge() {
     return new ConditionalsQueriesService({
       queryString: this.queryString,
@@ -77,14 +79,16 @@ export class SearchQueriesService implements DmlQueries {
       useMsDriver: this.driverType == "mssql" ? true : false,
     });
   }
-  explainPlan() {
+  @NotImplemented
+  public explainPlan() {
     return new ConditionalsQueriesService({
       queryString: this.queryString,
       driver: this.driver,
       useMsDriver: this.driverType == "mssql" ? true : false,
     });
   }
-  lockTable() {
+  @NotImplemented
+  public lockTable() {
     return new ConditionalsQueriesService({
       queryString: this.queryString,
       driver: this.driver,

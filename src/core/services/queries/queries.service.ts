@@ -5,14 +5,14 @@ import { DmlQueries } from "../../interfaces/adapters/queries/dml.queries.adapte
 import { QueriesOptions } from "../../interfaces/database/options/queries.options.interface";
 import { AuthQueriesService } from "./auth.queries.service";
 import { DefinitionQueriesServices } from "./definition.queries.service";
-import { SearchQueriesService } from "./search.queries.service";
+import { ManageQueriesService } from "./manage.queries.service";
 
 export default class QueriesService implements QueriesAdapter {
   query: DmlQueries;
   modeling: DdlQueries;
   auth: DclQueries;
   constructor(options: QueriesOptions) {
-    this.query = new SearchQueriesService(options);
+    this.query = new ManageQueriesService(options);
     this.auth = new AuthQueriesService(options);
     this.modeling = new DefinitionQueriesServices(options);
   }

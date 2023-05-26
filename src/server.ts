@@ -19,9 +19,10 @@ const octopus = new OctopusQL({
 });
 
 async function getReservations() {
-  const { modeling } = await octopus.instance;
+  const { modeling, query} = await octopus.instance;
   try {
     await modeling.create({ type: "TABLE"});
+    query.explainPlan()
   } catch (error) {
     console.log(error);
   }

@@ -1,5 +1,7 @@
+import { LogType } from "../../../types/log/log.types";
+
 export interface LoggerProps {
-  type: "sucess" | "warning" | "info" | "error";
+  type: LogType;
   message: string;
   useFunctionArgs?: boolean;
   functionParams?: number;

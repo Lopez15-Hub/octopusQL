@@ -2,6 +2,7 @@ import { ConnectionPool, Request } from "mssql";
 import { DatabaseAdapter } from "../../../interfaces/adapters/database/database.adapter.interface";
 import QueriesService from "../../queries/queries.service";
 import MsSqlEnviroment from "../../../enviroments/database/msSql/msSql.enviroment";
+import { LogService } from "../../log/log.service";
 
 export default class SqlServerService implements DatabaseAdapter {
   driver: ConnectionPool;
@@ -21,9 +22,17 @@ export default class SqlServerService implements DatabaseAdapter {
 
   async connect() {
     try {
-      await this.driver.connect();
-    } catch (error) {
-      throw new Error(`Error al conectar: ${error}`);
+      this.driver.connect();
+      LogService.show({
+        message: `Connected to database`,
+        type: "SUCCESS",
+      });
+    } catch (error: any) {
+      const { code } = error;
+      LogService.show({
+        message: `An ocurred error connecting to database: ${code}`,
+        type: "SUCCESS",
+      });
     }
   }
 }

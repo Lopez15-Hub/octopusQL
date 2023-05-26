@@ -26,12 +26,16 @@ export class OctopusQL {
   }
   @PrintBefore({
     message: "Using",
-    type: "info",
+    type: "INFO",
     functionParams: 0,
   })
   async chooseDriver(driverType: Driver, credentials: DatabaseKeys) {
     if (driverType == "mysql") {
-      return new MySqlService(credentials!).instance;
+      const mysql = new MySqlService(credentials!);
+
+      await mysql.connect();
+
+      return mysql.instance;
     }
     if (driverType == "mssql") {
       const mssql = new SqlServerService(credentials!);

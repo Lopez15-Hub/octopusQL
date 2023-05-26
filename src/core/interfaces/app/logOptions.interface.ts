@@ -1,5 +1,6 @@
-export interface LogOptions{
-    message:string;
-    type: 'WARNING' | 'ERROR' | 'INFO' | 'SUCCESS';
-    
+import { LogType } from "../../types/log/log.types";
+
+export interface LogOptions {
+  message: string;
+  type: LogType;
 }

@@ -1,4 +1,4 @@
-import { FromOptions } from "../options/from.options.interface";
+import { FromOptions } from "../../options/from.options.interface";
 
 export interface SelectClause {
   from: FromOptions;

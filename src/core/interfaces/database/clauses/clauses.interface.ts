@@ -1,1 +1,1 @@
-export * from './select.clause.interface';
+export * from "./dml/select.clause.interface";

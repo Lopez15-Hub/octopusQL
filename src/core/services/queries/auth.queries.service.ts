@@ -35,7 +35,7 @@ export class AuthQueriesService implements DclQueries {
       
           reject(error);
           return LogService.show({
-            message: `An ocurred error creating executing : ${error}`,
+            message: `An ocurred error executing : ${error}`,
             type: "ERROR",
           });
         }
