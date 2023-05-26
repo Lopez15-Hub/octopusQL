@@ -1,9 +1,8 @@
 import "reflect-metadata";
 import { SqlColumn } from "./core/decorators/column/sqlColumn.decorator";
-import { Schema } from "./core/model/schema.model";
 import { OctopusQL } from "./octopus";
 
-export class Person extends Schema {
+export class Person {
   @SqlColumn({ type: "INT", pk: true, autoIncrement: true })
   id_person: number = 0;
 
@@ -14,6 +13,8 @@ export class Person extends Schema {
 
   @SqlColumn({ length: 255, type: "VARCHAR" })
   dni: string = "";
+  @SqlColumn({ length: 255, type: "VARCHAR" })
+  contract: string = "";
   @SqlColumn({ length: 255, type: "VARCHAR" })
   rodeo: string = "";
 }
