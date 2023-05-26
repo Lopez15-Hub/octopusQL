@@ -15,25 +15,25 @@ export function PrintBefore(options: LoggerProps) {
       if (type == "sucess") {
         console.log(
           "\x1b[42m\x1b[37m%s\x1b[0m",
-          `\n [OCTOPUSQL] ${message}${fnArgs ? fnArgs : ""} \n`
+          `\n [OCTOPUSQL] ${message} [ ${fnArgs ? fnArgs : ""} ] \n`
         );
       }
       if (type == "error") {
         console.log(
           "\x1b[41m\x1b[37m%s\x1b[0m",
-          `\n [OCTOPUSQL] ${message}${fnArgs ? fnArgs : ""} \n`
+          `\n [OCTOPUSQL] ${message} [ ${fnArgs ? fnArgs : ""} ] \n`
         );
       }
       if (type == "warning") {
         console.log(
           "\x1b[43m%s\x1b[0m",
-          `\n [OCTOPUSQL] ${message}${fnArgs ? fnArgs : ""} \n`
+          `\n [OCTOPUSQL] ${message} [ ${fnArgs ? fnArgs : ""} ] \n`
         );
       }
       if (type == "info") {
         console.log(
           "\x1b[44m\x1b[37m%s\x1b[0m",
-          `\n [OCTOPUSQL] ${message} ${fnArgs ? fnArgs : ""}  \n`
+          `\n [OCTOPUSQL] ${message} [ ${fnArgs ? fnArgs : ""} ]  \n`
         );
       }
       return result;
@@ -41,5 +41,3 @@ export function PrintBefore(options: LoggerProps) {
     return descriptor;
   };
 }
-
-

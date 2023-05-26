@@ -25,7 +25,7 @@ export class OctopusQL {
     this.instance = this.chooseDriver(driverType, credentials!);
   }
   @PrintBefore({
-    message: "Using ",
+    message: "Using",
     type: "info",
     functionParams: 0,
   })
