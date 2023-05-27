@@ -36,7 +36,7 @@ async function main() {
   const { query } = await instance;
   try {
     const res = await query
-      .select({ values: "customerName", from: { table: "Customers" } })
+      .select({ values: "customerName", model: Customers })
       .join({
         key: "customerID",
         modelFrom: new Customers(),

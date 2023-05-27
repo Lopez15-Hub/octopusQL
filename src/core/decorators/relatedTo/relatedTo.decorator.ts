@@ -4,7 +4,7 @@ import { RelatedToProps } from "../../interfaces/decorators/relatedTo.decorator.
 export function RelatedTo(options: RelatedToProps) {
   return (target: any, propertyKey: string) => {
     const { model, type } = options;
-    const modelName = model.constructor.name;
+    const modelName = model.name;
     const sql = `${propertyKey} ${type}`;
 
     const fk_sql = `CONSTRAINT FK_${abbreviateName(

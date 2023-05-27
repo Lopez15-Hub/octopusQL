@@ -19,12 +19,11 @@ export class ManageQueriesService implements DmlQueries {
   }
 
   select(options: SelectClause) {
-    const { from, values, useDistinct } = options;
+    const { model, values, useDistinct, schema } = options;
+    const tableName = model.name;
     this.queryString = `SELECT ${
       useDistinct ? "DISTINCT" : ""
-    } ${values} FROM ${
-      from.schema ? from.schema + "." + from.table : from.table
-    }`;
+    } ${values} FROM ${schema ? schema + "." + tableName : tableName}`;
     return new ConditionalsQueriesService({
       queryString: this.queryString,
       driver: this.driver,

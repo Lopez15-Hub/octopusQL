@@ -8,7 +8,7 @@ export class Shipments extends SqlModel {
   shipmentID: number = 0;
 
   // Relación con la tabla Customers
-  @RelatedTo({ type: "INT", model: new Customers()})
+  @RelatedTo({ type: "INT", model: Customers})
   customerId: number = 0;
 
   @SqlColumn({ type: "VARCHAR", length: 255 })

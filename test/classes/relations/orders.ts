@@ -7,7 +7,7 @@ export class Orders extends SqlModel {
   @SqlColumn({ type: "INT", pk: true, autoIncrement: true, length: 10 })
   orderId: number = 0;
 
-  @RelatedTo({ type: "INT", model: new Customers() })
+  @RelatedTo({ type: "INT", model: Customers })
   customerId: number = 0;
 
   @SqlColumn({ type: "VARCHAR", length: 255 })
@@ -18,5 +18,4 @@ export class Orders extends SqlModel {
 
   @SqlColumn({ type: "VARCHAR", length: 255 })
   city: string = "";
-
 }
