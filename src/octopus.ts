@@ -1,6 +1,7 @@
 import "reflect-metadata";
 
 import {
+  DatabaseAdapter,
   DatabaseKeys,
   MySqlService,
   QueriesAdapter,
@@ -33,18 +34,17 @@ export class OctopusQL {
     if (driverType == "mysql") {
       const mysql = new MySqlService(credentials!);
 
-      await mysql.connect();
+      await this.startConnection(mysql);
 
       return mysql.instance;
     }
     if (driverType == "mssql") {
       const mssql = new SqlServerService(credentials!);
-      await this.connectToSqlServer(mssql);
+      await this.startConnection(mssql);
       return mssql.instance;
     } else {
       return new MySqlService(credentials!).instance;
     }
   }
-
-  connectToSqlServer = async (driver: SqlServerService) => driver.connect();
+  private startConnection = async (driver: DatabaseAdapter) => driver.connect();
 }

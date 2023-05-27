@@ -3,10 +3,11 @@ import { RelatedToProps } from "../../interfaces/decorators/relatedTo.decorator.
 
 export function RelatedTo(options: RelatedToProps) {
   return (target: any, propertyKey: string) => {
-    const { model, key } = options;
-    const modelName = model.constructor.name; // Nombre del constructor de la clase Materias
-    const sql = `FOREIGN KEY (${key}) REFERENCES ${modelName}(${key})`;
-    console.log(sql);
+    const { model, key, driver } = options;
+    const modelName = model.constructor.name;
+    const sql = `${
+      driver == "mssql" ? `CONSTRAINT FK_${key}` : ""
+    } FOREIGN KEY (${key}) REFERENCES ${modelName}(${key})`;
     Reflect.defineMetadata(propertyKey, sql, target, propertyKey);
   };
 }

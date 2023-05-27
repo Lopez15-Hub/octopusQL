@@ -7,6 +7,7 @@ export interface SqlColumnProps {
   pk?: boolean;
   relatedTo?: SqlModel;
   autoIncrement?: boolean;
+  identity?: boolean;
   notNull?: boolean;
   defaultValue?: any;
 }

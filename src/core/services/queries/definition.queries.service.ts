@@ -66,7 +66,9 @@ export class DefinitionQueriesServices implements DdlQueries {
         if (metadata.includes("FOREIGN") || metadata.includes("PRIMARY")) {
           columns.push(`ADD ${metadata}`);
         } else {
-          columns.push(`ADD COLUMN ${metadata}`);
+          this.driverType == "mysql"
+            ? columns.push(`ADD COLUMN ${metadata}`)
+            : columns.push(`ADD ${metadata}`);
         }
       }
     }
@@ -95,10 +97,10 @@ export class DefinitionQueriesServices implements DdlQueries {
       } (${columns});`;
     }
     if (type == "DATABASE") {
-      this.queryString = `CREATE ${type}  IF NOT EXISTS ${dbOrViewName}`;
+      this.queryString = `CREATE ${type}  ${dbOrViewName}`;
     }
     if (type == "VIEW") {
-      this.queryString = `CREATE ${type}  IF NOT EXISTS ${dbOrViewName} AS ${viewQuery}`;
+      this.queryString = `CREATE ${type}  ${dbOrViewName} AS ${viewQuery}`;
     }
     if (type == "USER") {
       const { password, username, host } = newUser!;
@@ -112,7 +114,7 @@ export class DefinitionQueriesServices implements DdlQueries {
     try {
       await this.execute();
     } catch (error: any) {
-      const { code } = error;
+      const { code, message } = error;
       if (code == "ER_EMPTY_QUERY") {
         return LogService.show({
           message: "You must specify the [ MODEL ] that you want create.",
@@ -120,14 +122,23 @@ export class DefinitionQueriesServices implements DdlQueries {
         });
       }
 
-      if (code == "ER_TABLE_EXISTS_ERROR") {
+      if (
+        code == "ER_TABLE_EXISTS_ERROR" ||
+        message.includes("There is already an object named")
+      ) {
         const newColumns = await this.convertNewColumns(model!, schema);
         if (newColumns.length > 0) {
           await this.alter({ columns: newColumns, model: model!, schema });
         }
       } else {
+         LogService.show({
+          message: `An ocurred error creating ${type} ${
+            type == "TABLE" ? model!.constructor.name : ""
+          }: ${code} ${message}`,
+          type: "ERROR",
+        });
         return LogService.show({
-          message: `An ocurred error creating ${type}: ${code}`,
+          message: `Executing: ${this.queryString}`,
           type: "ERROR",
         });
       }
@@ -138,13 +149,21 @@ export class DefinitionQueriesServices implements DdlQueries {
     this.queryString = `ALTER TABLE ${schema ? schema + "." : ""}${
       model.constructor.name
     } ${columns} `;
-    console.log(this.queryString);
     try {
       await this.execute();
-      console.log("Columnas actualizadas");
     } catch (error: any) {
-      const { code } = error;
-      console.log("Ha ocurrido un error Intentando alterar: ", code);
+      const { code, sqlMessage, message } = error;
+      if (code == "ER_DUP_FIELDNAME") {
+        return LogService.show({
+          message: `${sqlMessage} in ${model.constructor.name}, skipping...`,
+          type: "WARNING",
+        });
+      }
+      console.log(error);
+      return LogService.show({
+        message: `Alter table failed Reason: ${code}${message} `,
+        type: "ERROR",
+      });
     }
   }
   drop(): this {

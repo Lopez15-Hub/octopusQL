@@ -1,6 +1,6 @@
 import { SelectClause } from "../../core";
 import { DmlQueries } from "../../interfaces/adapters/queries/dml.queries.adapter.interface";
-import ConditionalsQueriesService from "./conditionals.service";
+import ConditionalsQueriesService from "./conditionals.queries.service";
 import { Driver } from "../../types/drivers/drivers.types";
 import { QueriesOptions } from "../../interfaces/database/options/queries.options.interface";
 import { DeleteClause } from "../../interfaces/database/clauses/dml/delete.clause.interface";
@@ -18,7 +18,8 @@ export class ManageQueriesService implements DmlQueries {
     this.driverType = driverType;
   }
 
-  select({ values, useDistinct = false, from }: SelectClause) {
+  select(options: SelectClause) {
+    const { from, values, useDistinct } = options;
     this.queryString = `SELECT ${
       useDistinct ? "DISTINCT" : ""
     } ${values} FROM ${

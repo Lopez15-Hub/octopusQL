@@ -22,9 +22,9 @@ export default class SqlServerService implements DatabaseAdapter {
 
   async connect() {
     try {
-      this.driver.connect();
+      await this.driver.connect();
       LogService.show({
-        message: `Connected to database`,
+        message: `Connected to database ${this.keys.database}`,
         type: "SUCCESS",
       });
     } catch (error: any) {
