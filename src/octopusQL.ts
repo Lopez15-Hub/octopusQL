@@ -10,6 +10,7 @@ import {
 import { OctopusOptions } from "./core/interfaces/app/octopus.options.interface";
 import { Driver } from "./core/types/drivers/drivers.types";
 import { PackageMetadata } from "./core/decorators/packageMetadata/packageMetada.decorator";
+import { LogService } from "./core/services/log/log.service";
 
 export class OctopusQL {
   instance: Promise<QueriesAdapter>;
@@ -30,7 +31,11 @@ export class OctopusQL {
     type: "INFO",
     functionParams: 0,
   })
-  async chooseDriver(driverType: Driver, credentials: DatabaseKeys) {
+  async chooseDriver(
+    driverType: Driver,
+    credentials: DatabaseKeys,
+    customDriver?: DatabaseAdapter
+  ) {
     if (driverType == "mysql") {
       const mysql = new MySqlService(credentials!);
 
@@ -43,7 +48,16 @@ export class OctopusQL {
       await this.startConnection(mssql);
       return mssql.instance;
     } else {
-      return new MySqlService(credentials!).instance;
+      try {
+        await this.startConnection(customDriver!);
+        return customDriver!.instance;
+      } catch (error) {
+        LogService.show({
+          message: " CUSTOM DRIVER INCORRECTLY IMPLEMENTED",
+          type: "ERROR",
+        });
+        throw new Error("driver_incorrectly_implemented");
+      }
     }
   }
   private startConnection = async (driver: DatabaseAdapter) => driver.connect();
