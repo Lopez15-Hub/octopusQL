@@ -34,18 +34,27 @@ const octopus = new OctopusQL({
 });
 
 async function main() {
-  const { modeling } = await octopus.instance;
+  const { query } = await octopus.instance;
   try {
-    await modeling.create({
-      type: "TABLE",
-      model: new Orders(),
-      schema: "dbo",
-    });
-    await modeling.create({
-      type: "TABLE",
-      model: new Customers(),
-      schema: "dbo",
-    });
+    // await modeling.create({
+    //   type: "TABLE",
+    //   model: new Orders(),
+    //   schema: "dbo",
+    // });
+    // await modeling.create({
+    //   type: "TABLE",
+    //   model: new Customers(),
+    //   schema: "dbo",
+    // });
+   const res = await query
+     .select({ values: "*", from: { table: "Orders" } })
+     .join({
+       key: "customerID",
+       modelFrom: new Orders(),
+       modelTo: new Customers(),
+     })
+     .execute();
+    console.log(res);
   } catch (error: any) {
     LogService.show({ message: `${error}`, type: "ERROR" });
   }
