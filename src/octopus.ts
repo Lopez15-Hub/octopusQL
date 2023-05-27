@@ -9,7 +9,7 @@ import {
 } from "./core/core";
 import { OctopusOptions } from "./core/interfaces/app/octopus.options.interface";
 import { Driver } from "./core/types/drivers/drivers.types";
-import { PrintBefore } from "./core/decorators/logger/printBefore.decorator";
+import { PackageMetadata } from "./core/decorators/packageMetadata/packageMetada.decorator";
 
 export class OctopusQL {
   instance: Promise<QueriesAdapter>;
@@ -25,8 +25,8 @@ export class OctopusQL {
     }
     this.instance = this.chooseDriver(driverType, credentials!);
   }
-  @PrintBefore({
-    message: "Using",
+  @PackageMetadata({
+    message: `Using`,
     type: "INFO",
     functionParams: 0,
   })

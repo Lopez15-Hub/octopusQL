@@ -92,7 +92,7 @@ export class DefinitionQueriesServices implements DdlQueries {
 
     if (model && type == "TABLE") {
       const columns = this.extractDataFromModel(model, false);
-      this.queryString = `CREATE ${type} ${schema ? schema + "." : ""} ${
+      this.queryString = `CREATE ${type} ${schema ? schema : ""}.${
         model.constructor.name
       } (${columns});`;
     }
@@ -131,10 +131,10 @@ export class DefinitionQueriesServices implements DdlQueries {
           await this.alter({ columns: newColumns, model: model!, schema });
         }
       } else {
-         LogService.show({
+        LogService.show({
           message: `An ocurred error creating ${type} ${
             type == "TABLE" ? model!.constructor.name : ""
-          }: ${code} ${message}`,
+          }: ${code},  ${message}`,
           type: "ERROR",
         });
         return LogService.show({
@@ -152,16 +152,21 @@ export class DefinitionQueriesServices implements DdlQueries {
     try {
       await this.execute();
     } catch (error: any) {
-      const { code, sqlMessage, message } = error;
+      const { code, sqlMessage, message, precedingErrors } = error;
       if (code == "ER_DUP_FIELDNAME") {
         return LogService.show({
           message: `${sqlMessage} in ${model.constructor.name}, skipping...`,
           type: "WARNING",
         });
       }
-      console.log(error);
+      if (precedingErrors) {
+        return LogService.show({
+          message: `${precedingErrors[0]} omiting... `,
+          type: "WARNING",
+        });
+      }
       return LogService.show({
-        message: `Alter table failed Reason: ${code}${message} `,
+        message: `Alter table failed Reason: ${code}, ${message} `,
         type: "ERROR",
       });
     }
