@@ -32,12 +32,26 @@ export class OctopusQL {
     }
     this.instance = this.chooseDriver(driverType, credentials!);
   }
+
+  async registerSchemas(instance: Promise<QueriesAdapter>, models: SqlModel[]) {
+    const { modeling } = await instance;
+
+    try {
+      for (const model in models)
+        await modeling.create({
+          type: "TABLE",
+          model: models[model],
+        });
+    } catch (error: any) {
+      ErrorService.factory("REGISTER_SCHEMA_ERROR", error);
+    }
+  }
   @PackageMetadata({
     message: `Using`,
     type: "INFO",
     functionParams: 0,
   })
-  async chooseDriver(
+  private async chooseDriver(
     driverType: Driver,
     credentials: DatabaseKeys,
     customDriver?: DatabaseAdapter
@@ -77,17 +91,4 @@ export class OctopusQL {
     }
   }
   private startConnection = async (driver: DatabaseAdapter) => driver.connect();
-
-  async registerSchemas(instance: Promise<QueriesAdapter>, models: SqlModel[]) {
-    const { modeling } = await instance;
-    for (const model in models)
-      await modeling.create({
-        type: "TABLE",
-        model: models[model],
-      });
-    try {
-    } catch (error: any) {
-      ErrorService.factory("REGISTER_SCHEMA_ERROR", error);
-    }
-  }
 }

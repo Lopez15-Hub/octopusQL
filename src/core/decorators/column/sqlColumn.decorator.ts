@@ -37,14 +37,14 @@ function buildColumnTypeDefinition(
   defaultValue?: string
 ): string {
   let sql = `${propertyKey} ${type}`;
-
+ if (length) {
+   sql += `(${length})`;
+ }
   if (autoIncrement) {
     sql += " AUTO_INCREMENT";
   }
 
-  if (length) {
-    sql += `(${length})`;
-  }
+ 
 
   if (identity) {
     sql += " IDENTITY(1,1)";

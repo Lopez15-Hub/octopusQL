@@ -19,6 +19,7 @@ export class DefinitionQueriesHelpers {
   }
 
   async execute(): Promise<any[]> {
+    console.log(this.queryString);
     return new Promise((resolve, reject) => {
       this.driver.query(this.queryString ?? "", (error: any, rows: any) => {
         if (error) {
@@ -35,12 +36,11 @@ export class DefinitionQueriesHelpers {
   }
   async getExistingColumns(
     tableName: string,
-    schema?: string
+    _chema?: string
   ): Promise<string[]> {
-    this.queryString = `SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '${tableName}' ${
-      schema ? `AND TABLE_SCHEMA = '${schema}'` : ""
-    };`;
+    this.queryString = `SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '${tableName}' `;
     const result = await this.execute();
+    this.queryString = "";
     return result.map((row: any) => row.COLUMN_NAME);
   }
 
@@ -92,23 +92,24 @@ export class DefinitionQueriesHelpers {
     const { dbOrViewName, newUser, type, model, schema, viewQuery } = options;
     if (model && type == "TABLE") {
       const columns = this.extractDataFromModel(model, false);
+      console.log(columns);
       this.queryString = `CREATE ${type} ${schema ? schema + "." : ""}${
         model.constructor.name
-      }(${columns})`;
+      } ${columns}`;
     }
     if (type == "DATABASE") {
-      this.queryString = `CREATE ${type}  ${dbOrViewName}`;
+      this.queryString = `CREATE ${type}  ${dbOrViewName};`;
     }
     if (type == "VIEW") {
-      this.queryString = `CREATE ${type}  ${dbOrViewName} AS ${viewQuery}`;
+      this.queryString = `CREATE ${type}  ${dbOrViewName} AS ${viewQuery};`;
     }
     if (type == "USER") {
       const { password, username, host } = newUser!;
       if (this.driverType == "mysql") {
-        this.queryString = `CREATE ${type}  ${username}@${host} IDENTIFIED BY ${password}`;
+        this.queryString = `CREATE ${type}  ${username}@${host} IDENTIFIED BY ${password};`;
       }
       if (this.driverType == "mssql") {
-        this.queryString = `CREATE LOGIN  ${username}  WITH PASSWORD = ${password}`;
+        this.queryString = `CREATE LOGIN  ${username}  WITH PASSWORD = ${password};`;
       }
     }
     return this.queryString;

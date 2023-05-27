@@ -1,8 +1,9 @@
-import { Customers } from "../test/classes/relations/customer";
+import { Shipments } from "../test/classes/relations/shipments";
 import { Orders } from "../test/classes/relations/orders";
 import { DatabaseKeys } from "./core/core";
 import { LogService } from "./core/services/log/log.service";
 import { OctopusQL } from "./octopusQL";
+import { Customers } from "../test/classes/relations/customer";
 
 const mySqlKeys: DatabaseKeys = {
   database: "db_test",
@@ -25,26 +26,26 @@ const mySqlKeys: DatabaseKeys = {
 //     min: 1000,
 //   },
 
-const oc = new OctopusQL({
+const { instance, registerSchemas } = new OctopusQL({
   driverType: "mysql",
   credentials: mySqlKeys,
 });
 
-oc.registerSchemas(oc.instance, [new Customers(), new Orders()]);
+registerSchemas(instance, [new Customers(), new Orders(), new Shipments()]);
 async function main() {
+  const { query } = await instance;
   try {
-    // const res = await query
-    //   .select({ values: "*", from: { table: "Orders" } })
-    //   .join({
-    //     key: "customerID",
-    //     modelFrom: new Orders(),
-    //     modelTo: new Customers(),
-    //   })
-    //   .execute();
-    // console.log(res[0]);
+    const res = await query
+      .select({ values: "customerName", from: { table: "Customers" } })
+      .join({
+        key: "customerID",
+        modelFrom: new Customers(),
+        modelTo: new Shipments(),
+      })
+      .execute();
+    console.log(res);
   } catch (error: any) {
     LogService.show({ message: `${error}`, type: "ERROR" });
   }
 }
-
 main();

@@ -4,21 +4,17 @@ import { AlterClause } from "../../interfaces/database/clauses/alter.clause.inte
 import { CreateClause } from "../../interfaces/database/clauses/create.clause.interface";
 import { QueriesOptions } from "../../interfaces/database/options/queries.options.interface";
 import { Driver } from "../../types/drivers/drivers.types";
-import { ErrorService } from "../log/error.service";
-import { NotImplemented } from "../../decorators/notImplemented/notImplemented.decorator";
-import { DefinitionQueriesHelpers } from "../../helpers/queries/definition.queries.helpers";
+import { LogService } from "../log/log.service";
 
 export class DefinitionQueriesServices implements DdlQueries {
   private queryString: string;
   private driver: any;
   private driverType: Driver;
-  private helpers: DefinitionQueriesHelpers;
   constructor(options: QueriesOptions) {
     const { driver, driverType } = options;
     this.queryString = "";
     this.driverType = driverType;
     this.driver = driver;
-    this.helpers = new DefinitionQueriesHelpers(options, this);
   }
 
   async execute(): Promise<any[]> {
@@ -37,13 +33,136 @@ export class DefinitionQueriesServices implements DdlQueries {
     });
   }
 
-  async create(options: CreateClause): Promise<void> {
-    this.queryString += this.helpers.wantCreate(options);
+  private async getExistingColumns(
+    tableName: string,
+    schema?: string
+  ): Promise<string[]> {
+    this.queryString = `SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '${tableName}' ${
+      schema ? `AND TABLE_SCHEMA = '${schema}'` : ""
+    };`;
+    const result = await this.execute();
+    return result.map((row: any) => row.COLUMN_NAME);
+  }
+  private async convertNewColumns(model: Object, schema?: string) {
+    const propertyKeys = Object.getOwnPropertyNames(model);
+    const columns = [];
 
+    const existingColumns = await this.getExistingColumns(
+      model!.constructor.name,
+      schema
+    );
+
+    const filterExistingColumns = propertyKeys.filter(
+      (propertyName) => !existingColumns.includes(propertyName)
+    );
+
+    for (const columnName of filterExistingColumns) {
+      if (!existingColumns.includes(columnName)) {
+        const metadata: string = Reflect.getMetadata(
+          columnName,
+          model!,
+          columnName
+        );
+        if (metadata.includes("FOREIGN") || metadata.includes("PRIMARY")) {
+          columns.push(`ADD ${metadata}`);
+        } else {
+          this.driverType == "mysql"
+            ? columns.push(`ADD COLUMN ${metadata}`)
+            : columns.push(`ADD ${metadata}`);
+        }
+      }
+    }
+
+    return columns;
+  }
+
+  private extractDataFromModel(model: Object, alter?: boolean) {
+    const propertyKeys = Object.getOwnPropertyNames(model);
+    const columns = [];
+    const foreignKeys = new Set<string>(); // Utilizamos un Set para evitar claves duplicadas
+
+    for (const key of propertyKeys) {
+      const metadata: string = Reflect.getMetadata(`${key}`, model, key);
+      const fk_metadata: string = Reflect.getMetadata(`fk_${key}`, model, key);
+
+      if (metadata) {
+        columns.push(`${alter ? "ADD COLUMN " : ""}${metadata} `);
+      }
+
+      if (metadata && fk_metadata && !foreignKeys.has(fk_metadata)) {
+        columns.push(`${alter ? "ADD " : ""}${fk_metadata} `);
+        foreignKeys.add(fk_metadata);
+      }
+    }
+    return columns;
+  }
+
+  async create(options: CreateClause): Promise<void> {
+    const { model, type, viewQuery, dbOrViewName, schema, newUser } = options;
+
+    if (model && type == "TABLE") {
+      const columns = this.extractDataFromModel(model, false);
+      this.queryString = `CREATE ${type} ${schema ? schema + "." : ""}${
+        model.constructor.name
+      } (${columns});`;
+    }
+    if (type == "DATABASE") {
+      this.queryString = `CREATE ${type}  ${dbOrViewName}`;
+    }
+    if (type == "VIEW") {
+      this.queryString = `CREATE ${type}  ${dbOrViewName} AS ${viewQuery}`;
+    }
+    if (type == "USER") {
+      const { password, username, host } = newUser!;
+      if (this.driverType == "mysql") {
+        this.queryString = `CREATE ${type}  ${username}@${host} IDENTIFIED BY ${password}`;
+      }
+      if (this.driverType == "mssql") {
+        this.queryString = `CREATE LOGIN  ${username}  WITH PASSWORD = ${password}`;
+      }
+    }
     try {
       await this.execute();
     } catch (error: any) {
-      this.helpers.manageCreateErrors(error, options);
+      const { code, message } = error;
+      if (code == "ER_EMPTY_QUERY") {
+        return LogService.show({
+          message: "You must specify the [ MODEL ] that you want create.",
+          type: "WARNING",
+        });
+      }
+      if (code == "ER_DUP_FIELDNAME") {
+        LogService.show({
+          message: `Failed to create ${
+            model!.constructor.name
+          }, Reason:${code}.`,
+          type: "ERROR",
+        });
+        return LogService.show({
+          message: `Executing: ${this.queryString}`,
+          type: "ERROR",
+        });
+      }
+      if (
+        code == "ER_TABLE_EXISTS_ERROR" ||
+        message.includes("There is already an object named")
+      ) {
+        const newColumns = await this.convertNewColumns(model!, schema);
+        if (newColumns.length > 0) {
+          await this.alter({ columns: newColumns, model: model!, schema });
+        }
+      } else {
+        LogService.show({
+          message: `An ocurred error creating ${type} ${
+            type == "TABLE" ? model!.constructor.name : ""
+          }: ${code},  ${message}`,
+          type: "ERROR",
+        });
+        return LogService.show({
+          message: `Executing: ${this.queryString}`,
+          type: "ERROR",
+        });
+      }
     }
   }
   async alter(options: AlterClause): Promise<any> {
@@ -54,23 +173,35 @@ export class DefinitionQueriesServices implements DdlQueries {
     try {
       await this.execute();
     } catch (error: any) {
-      this.helpers.manageAlterErrors(error, model);
+      const { code, sqlMessage, message, precedingErrors } = error;
+      if (code == "ER_DUP_FIELDNAME") {
+        return LogService.show({
+          message: `${sqlMessage} in ${model.constructor.name}, skipping...`,
+          type: "WARNING",
+        });
+      }
+      if (precedingErrors) {
+        return LogService.show({
+          message: `${precedingErrors[0]} omiting... `,
+          type: "WARNING",
+        });
+      }
+      return LogService.show({
+        message: `Alter table failed Reason: ${code}, ${message} `,
+        type: "ERROR",
+      });
     }
   }
-  @NotImplemented
   drop(): this {
-    throw ErrorService.factory("oc_method_not_implemented");
+    throw new Error("Method not implemented.");
   }
-  @NotImplemented
   rename(): this {
-    throw ErrorService.factory("oc_method_not_implemented");
+    throw new Error("Method not implemented.");
   }
-  @NotImplemented
   truncate(): this {
-    throw ErrorService.factory("oc_method_not_implemented");
+    throw new Error("Method not implemented.");
   }
-  @NotImplemented
   comment(): this {
-    throw ErrorService.factory("oc_method_not_implemented");
+    throw new Error("Method not implemented.");
   }
 }

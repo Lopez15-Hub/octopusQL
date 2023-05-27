@@ -10,7 +10,7 @@ export class Person extends SqlModel {
   id_person: SqlKey = 0;
   @SqlColumn({ type: "INT" })
   id_materia: number = 0;
-  @RelatedTo({ model: new Materias(), key: "id_materia", driver: "mssql" })
+  @RelatedTo({ model: new Materias(), type: "id_materia", driver: "mssql" })
   fk_materia: number = 0;
 
   @SqlColumn({ type: "TEXT" })

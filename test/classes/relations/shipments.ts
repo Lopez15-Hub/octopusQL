@@ -3,20 +3,18 @@ import { RelatedTo } from "../../../src/core/decorators/relatedTo/relatedTo.deco
 import { SqlModel } from "../../../src/core/interfaces/database/misc/sqlModel.interface";
 import { Customers } from "./customer";
 
-export class Orders extends SqlModel {
+export class Shipments extends SqlModel {
   @SqlColumn({ type: "INT", pk: true, autoIncrement: true, length: 10 })
-  orderId: number = 0;
+  shipmentID: number = 0;
 
-  @RelatedTo({ type: "INT", model: new Customers() })
+  // Relación con la tabla Customers
+  @RelatedTo({ type: "INT", model: new Customers()})
   customerId: number = 0;
 
   @SqlColumn({ type: "VARCHAR", length: 255 })
-  orderNumber: string = "";
+  shipmentDate: string = "";
 
-  @SqlColumn({ type: "VARCHAR", length: 255 })
-  orderDate: string = "";
+  // Resto de columnas de la tabla Shipments
 
-  @SqlColumn({ type: "VARCHAR", length: 255 })
-  city: string = "";
-
+  // ...
 }
