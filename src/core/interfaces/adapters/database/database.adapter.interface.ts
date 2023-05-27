@@ -5,4 +5,5 @@ export interface DatabaseAdapter {
   readonly keys: DatabaseKeys;
   readonly instance: QueriesAdapter;
   connect(): void;
+  close(): void;
 }

@@ -1,5 +1,4 @@
 import "reflect-metadata";
-
 import {
   DatabaseAdapter,
   DatabaseKeys,
@@ -10,19 +9,26 @@ import {
 import { OctopusOptions } from "./core/interfaces/app/octopus.options.interface";
 import { Driver } from "./core/types/drivers/drivers.types";
 import { PackageMetadata } from "./core/decorators/packageMetadata/packageMetada.decorator";
-import { LogService } from "./core/services/log/log.service";
+import { ErrorService } from "./core/services/log/error.service";
+import { SqlModel } from "./core/interfaces/database/misc/sqlModel.interface";
 
 export class OctopusQL {
   instance: Promise<QueriesAdapter>;
+  driverType: Driver;
   constructor(options: OctopusOptions) {
     const { credentials, driverType, customDriver } = options;
+    this.driverType = driverType;
     if ((driverType == "mysql" || driverType == "mssql") && !credentials) {
-      throw new Error(
+      throw ErrorService.factory(
+        "credentials_empty",
         `Error: Credentials are required when using ${driverType} driver.`
       );
     }
     if (driverType == "custom" && !customDriver) {
-      throw new Error(`You must especify the custom driver that you want use.`);
+      throw ErrorService.factory(
+        "custom_driver_empty",
+        `You must especify the custom driver that you want use.`
+      );
     }
     this.instance = this.chooseDriver(driverType, credentials!);
   }
@@ -54,19 +60,34 @@ export class OctopusQL {
           if (customDriver.instance) {
             return customDriver.instance;
           } else {
-            throw new Error("Custom driver instance is undefined");
+            throw ErrorService.factory(
+              "driver_incorrectly_implemented",
+              "Custom driver instance is undefined"
+            );
           }
         }
 
-        throw new Error("Custom driver is not provided");
+        throw ErrorService.factory(
+          "driver_incorrectly_implemented",
+          "Custom driver is not provided"
+        );
       } catch (error: any) {
-        LogService.show({
-          message: error,
-          type: "ERROR",
-        });
-        throw new Error("driver_incorrectly_implemented");
+        throw ErrorService.factory("driver_incorrectly_implemented", error);
       }
     }
   }
   private startConnection = async (driver: DatabaseAdapter) => driver.connect();
+
+  async registerSchemas(instance: Promise<QueriesAdapter>, models: SqlModel[]) {
+    const { modeling } = await instance;
+    for (const model in models)
+      await modeling.create({
+        type: "TABLE",
+        model: models[model],
+      });
+    try {
+    } catch (error: any) {
+      ErrorService.factory("REGISTER_SCHEMA_ERROR", error);
+    }
+  }
 }

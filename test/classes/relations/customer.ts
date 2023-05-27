@@ -2,7 +2,7 @@ import { SqlColumn } from "../../../src/core/decorators/column/sqlColumn.decorat
 import { SqlModel } from "../../../src/core/interfaces/database/misc/sqlModel.interface";
 
 export class Customers extends SqlModel {
-  @SqlColumn({ type: "INT", pk: true, identity: true })
+  @SqlColumn({ type: "INT", pk: true, autoIncrement: true })
   customerID: string = "";
   @SqlColumn({ type: "VARCHAR", length: 255 })
   customerName: string = "";

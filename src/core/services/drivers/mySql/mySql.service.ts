@@ -8,7 +8,7 @@ import MySqlEnviroment from "../../../enviroments/database/mySql/mySql.enviromen
 import { LogService } from "../../log/log.service";
 
 export default class MySqlService implements DatabaseAdapter {
-  private readonly driver: mysql.Connection;
+  driver: mysql.Connection;
 
   constructor(readonly keys: MySqlEnviroment) {
     this.driver = mysql.createConnection({
@@ -22,6 +22,9 @@ export default class MySqlService implements DatabaseAdapter {
       driver: this.driver,
       driverType: "mysql",
     });
+  }
+  close(): void {
+    this.driver.end();
   }
   instance: QueriesAdapter;
 
@@ -41,5 +44,5 @@ export default class MySqlService implements DatabaseAdapter {
     }
   }
 
-  close = () => this.driver.end();
+  closeConnection = () => this.driver.end();
 }

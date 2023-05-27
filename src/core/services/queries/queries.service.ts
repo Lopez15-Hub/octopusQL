@@ -1,4 +1,5 @@
 import { QueriesAdapter } from "../../core";
+
 import { DclQueries } from "../../interfaces/adapters/queries/dcl.queries.adapter.interface";
 import { DdlQueries } from "../../interfaces/adapters/queries/ddl.queries.adapter.interface";
 import { DmlQueries } from "../../interfaces/adapters/queries/dml.queries.adapter.interface";
@@ -16,4 +17,5 @@ export default class QueriesService implements QueriesAdapter {
     this.auth = new AuthQueriesService(options);
     this.modeling = new DefinitionQueriesServices(options);
   }
+
 }

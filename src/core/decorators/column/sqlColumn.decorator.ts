@@ -1,24 +1,70 @@
 import "reflect-metadata";
 import { SqlColumnProps } from "../../interfaces/decorators/sqlColumn.decorator.props";
-import { LogService } from "../../services/log/log.service";
+import { ErrorService } from "../../services/log/error.service";
 
 export function SqlColumn(options: SqlColumnProps) {
   const { type, autoIncrement, defaultValue, length, notNull, pk, identity } =
     options;
   if (autoIncrement && identity) {
-    LogService.show({
-      message:
-        "Can't use both auto incremental atributes. Please use AUTO_INCREMENT for mySql and IDENTITY for Sql server. ",
-      type: "ERROR",
-    });
-    throw new Error("INCORRENT_ATRIBUTE_USE");
+    throw ErrorService.factory(
+      "incorrect_attribute_use",
+      "Can't use both auto incremental atributes. Please use AUTO_INCREMENT for mySql and IDENTITY for Sql server. "
+    );
   }
   return (target: any, propertyKey: string) => {
-    const sql = `${propertyKey} ${type} ${length ? "(" + length + ")" : ""} ${
-      identity ? "IDENTITY(1,1) " : ""
-    }${pk ? "PRIMARY KEY" : ""} ${autoIncrement ? "AUTO_INCREMENT" : ""}  ${
-      notNull ? "NOT NULL" : ""
-    } ${defaultValue ? defaultValue : ""} `;
-    Reflect.defineMetadata(propertyKey, sql, target, propertyKey);
+    const sql = buildColumnTypeDefinition(
+      propertyKey,
+      type,
+      autoIncrement,
+      length,
+      identity,
+      pk,
+      notNull,
+      defaultValue
+    );
+    setMetadata(target, propertyKey, sql);
   };
+}
+
+function buildColumnTypeDefinition(
+  propertyKey: string,
+  type: string,
+  autoIncrement?: boolean,
+  length?: number,
+  identity?: boolean,
+  pk?: boolean,
+  notNull?: boolean,
+  defaultValue?: string
+): string {
+  let sql = `${propertyKey} ${type}`;
+
+  if (autoIncrement) {
+    sql += " AUTO_INCREMENT";
+  }
+
+  if (length) {
+    sql += `(${length})`;
+  }
+
+  if (identity) {
+    sql += " IDENTITY(1,1)";
+  }
+
+  if (pk) {
+    sql += " PRIMARY KEY";
+  }
+
+  if (notNull) {
+    sql += " NOT NULL";
+  }
+
+  if (defaultValue) {
+    sql += ` ${defaultValue}`;
+  }
+
+  return sql;
+}
+
+function setMetadata(target: any, propertyKey: string, sql: string): void {
+  Reflect.defineMetadata(propertyKey, sql, target, propertyKey);
 }

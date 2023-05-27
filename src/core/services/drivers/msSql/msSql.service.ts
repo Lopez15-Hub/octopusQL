@@ -19,6 +19,9 @@ export default class SqlServerService implements DatabaseAdapter {
       driverType: "mssql",
     });
   }
+  close(): void {
+    this.driver.close();
+  }
 
   async connect() {
     try {

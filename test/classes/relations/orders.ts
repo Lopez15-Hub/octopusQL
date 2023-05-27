@@ -5,13 +5,13 @@ import { Customers } from "./customer";
 
 export class Orders extends SqlModel {
   
-  @SqlColumn({ type: "INT", pk: true, identity: true })
+  @SqlColumn({ type: "INT", pk: true, autoIncrement: true })
   orderId: number = 0;
   
   @SqlColumn({ type: "INT" })
   customerId: number = 0;
   
-  @RelatedTo({ key: "customerId", model: new Customers(), driver: "mssql" })
+  @RelatedTo({ key: "customerId", model: new Customers(), driver: "mysql" })
   fk_customerId: number = 0;
   
   @SqlColumn({ type: "VARCHAR", length: 255 })
