@@ -1,7 +1,7 @@
 import { SqlModel } from "../misc/sqlModel.interface";
 
 export interface JoinClause {
-  modelFrom: SqlModel;
-  modelTo: SqlModel;
+  modelFrom: Function;
+  modelTo: Function;
   key: string;
 }

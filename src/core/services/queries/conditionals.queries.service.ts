@@ -24,8 +24,8 @@ export default class ConditionalsQueriesService implements ConditionalsQueries {
   }
   join(options: JoinClause): this {
     const { key, modelFrom, modelTo } = options;
-    const { name: modelFromName } = modelFrom.constructor;
-    const { name: modelToName } = modelTo.constructor;
+    const { name: modelFromName } = modelFrom;
+    const { name: modelToName } = modelTo;
     this.queryString += ` 
     JOIN ${modelToName} 
     ON ${modelToName}.${key} = ${modelFromName}.${key};

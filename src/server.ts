@@ -39,8 +39,8 @@ async function main() {
       .select({ values: "customerName", model: Customers })
       .join({
         key: "customerID",
-        modelFrom: new Customers(),
-        modelTo: new Shipments(),
+        modelFrom: Customers,
+        modelTo: Shipments,
       })
       .execute();
     console.log(res);
