@@ -45,23 +45,16 @@ export class DefinitionQueriesServices implements DdlQueries {
   }
   private async convertNewColumns(model: Object, schema?: string) {
     const propertyKeys = Object.getOwnPropertyNames(model);
-        const columns = [];
+    const columns = [];
 
     const existingColumns = await this.getExistingColumns(
       model!.constructor.name,
       schema
     );
 
-    const filterExistingColumns = propertyKeys.filter((propertyName) =>
-      !existingColumns.includes(propertyName)
+    const filterExistingColumns = propertyKeys.filter(
+      (propertyName) => !existingColumns.includes(propertyName)
     );
-    const filterNotExistingColumns = existingColumns.filter(
-      (propertyName) => !propertyKeys.includes(propertyName)
-    );
-   for (const columnName of filterNotExistingColumns) {
-     columns.push(`DROP COLUMN ${columnName}`);
-     console.log(`Se eliminará la columna ${columnName} de la tabla.`);
-   }
 
     for (const columnName of filterExistingColumns) {
       if (!existingColumns.includes(columnName)) {
@@ -70,7 +63,11 @@ export class DefinitionQueriesServices implements DdlQueries {
           model!,
           columnName
         );
-        columns.push(`ADD COLUMN ${metadata}`);
+        if (metadata.includes("FOREIGN") || metadata.includes("PRIMARY")) {
+          columns.push(`ADD ${metadata}`);
+        } else {
+          columns.push(`ADD COLUMN ${metadata}`);
+        }
       }
     }
 
@@ -125,7 +122,6 @@ export class DefinitionQueriesServices implements DdlQueries {
 
       if (code == "ER_TABLE_EXISTS_ERROR") {
         const newColumns = await this.convertNewColumns(model!, schema);
-        console.log(newColumns);
         if (newColumns.length > 0) {
           await this.alter({ columns: newColumns, model: model!, schema });
         }

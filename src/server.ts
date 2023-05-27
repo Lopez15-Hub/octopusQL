@@ -1,3 +1,4 @@
+import { Materias } from "../test/classes/materias";
 import { Person } from "../test/classes/person";
 import { OctopusQL } from "./octopus";
 
@@ -22,6 +23,7 @@ const octopus = new OctopusQL({
 async function getReservations() {
   const { modeling } = await octopus.instance;
   try {
+    await modeling.create({ type: "TABLE", model: new Materias() });
     await modeling.create({ type: "TABLE", model: new Person() });
   } catch (error) {
     console.log(error);
