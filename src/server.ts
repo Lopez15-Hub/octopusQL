@@ -4,7 +4,7 @@ import { Customers } from "../test/classes/relations/customer";
 import { Orders } from "../test/classes/relations/orders";
 import { DatabaseKeys } from "./core/core";
 import { LogService } from "./core/services/log/log.service";
-import { OctopusQL } from "./octopus";
+import { OctopusQL } from "./octopusQL";
 
 // const mySqlKeys = {
 //   database: "db_test",
