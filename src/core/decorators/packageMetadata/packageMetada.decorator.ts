@@ -12,12 +12,12 @@ export function PackageMetadata(options: LoggerProps) {
     const originalMethod = descriptor.value;
 
     descriptor.value = async function (...args: any[]) {
-      const { version } = await readJSONFile();
+      const { version,name } = await readJSONFile();
 
       const fnArgs = functionParams! >= 0 ? args[functionParams!] : [];
       const result = await originalMethod.apply(this, args);
       LogService.show({
-        message: `Version [${version}] ${message} [ ${fnArgs ? fnArgs : ""} ]`,
+        message: `${name} version [${version}] ${message} [ ${fnArgs ? fnArgs : ""} ]`,
         type,
       });
 
