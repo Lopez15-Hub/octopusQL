@@ -49,11 +49,19 @@ export class OctopusQL {
       return mssql.instance;
     } else {
       try {
-        await this.startConnection(customDriver!);
-        return customDriver!.instance;
-      } catch (error) {
+        if (customDriver) {
+          await this.startConnection(customDriver);
+          if (customDriver.instance) {
+            return customDriver.instance;
+          } else {
+            throw new Error("Custom driver instance is undefined");
+          }
+        }
+
+        throw new Error("Custom driver is not provided");
+      } catch (error: any) {
         LogService.show({
-          message: " CUSTOM DRIVER INCORRECTLY IMPLEMENTED",
+          message: error,
           type: "ERROR",
         });
         throw new Error("driver_incorrectly_implemented");
