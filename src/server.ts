@@ -1,7 +1,5 @@
 // import { Customers } from "../test/classes/relations/customer";
 // import { Orders } from "../test/classes/relations/orders";
-import { Customers } from "../test/classes/relations/customer";
-import { Orders } from "../test/classes/relations/orders";
 import { DatabaseKeys } from "./core/core";
 import { LogService } from "./core/services/log/log.service";
 import { OctopusQL } from "./octopusQL";
@@ -34,7 +32,7 @@ const octopus = new OctopusQL({
 });
 
 async function main() {
-  const { query } = await octopus.instance;
+   await octopus.instance;
   try {
     // await modeling.create({
     //   type: "TABLE",
@@ -46,15 +44,14 @@ async function main() {
     //   model: new Customers(),
     //   schema: "dbo",
     // });
-   const res = await query
-     .select({ values: "*", from: { table: "Orders" } })
-     .join({
-       key: "customerID",
-       modelFrom: new Orders(),
-       modelTo: new Customers(),
-     })
-     .execute();
-    console.log(res);
+    // const res = await query
+    //   .select({ values: "*", from: { table: "Orders" } })
+    //   .join({
+    //     key: "customerID",
+    //     modelFrom: new Orders(),
+    //     modelTo: new Customers(),
+    //   })
+    //   .execute();
   } catch (error: any) {
     LogService.show({ message: `${error}`, type: "ERROR" });
   }

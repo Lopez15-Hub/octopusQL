@@ -15,7 +15,7 @@ export default class ConditionalsQueriesService implements ConditionalsQueries {
     this.useMsDriver = useMsDriver;
   }
   where(condition: string) {
-    this.queryString = `${this.queryString} WHERE ${condition}`;
+    this.queryString += ` WHERE ${condition}`;
     return new LogicQueriesService({
       driver: this.driver,
       queryString: this.queryString,
@@ -26,8 +26,28 @@ export default class ConditionalsQueriesService implements ConditionalsQueries {
     const { key, modelFrom, modelTo } = options;
     const { name: modelFromName } = modelFrom.constructor;
     const { name: modelToName } = modelTo.constructor;
-    this.queryString = `${this.queryString} 
+    this.queryString += ` 
     JOIN ${modelToName} 
+    ON ${modelToName}.${key} = ${modelFromName}.${key};
+`;
+    return this;
+  }
+  leftJoin(options: JoinClause): this {
+    const { key, modelFrom, modelTo } = options;
+    const { name: modelFromName } = modelFrom.constructor;
+    const { name: modelToName } = modelTo.constructor;
+    this.queryString += ` 
+    LEFT JOIN ${modelToName} 
+    ON ${modelToName}.${key} = ${modelFromName}.${key};
+`;
+    return this;
+  }
+  rightJoin(options: JoinClause): this {
+    const { key, modelFrom, modelTo } = options;
+    const { name: modelFromName } = modelFrom.constructor;
+    const { name: modelToName } = modelTo.constructor;
+    this.queryString += ` 
+    RIGHT JOIN ${modelToName} 
     ON ${modelToName}.${key} = ${modelFromName}.${key};
 `;
     return this;
