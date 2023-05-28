@@ -33,23 +33,18 @@ export class DefinitionQueriesServices implements DdlQueries {
     });
   }
 
-  private async getExistingColumns(
-    tableName: string,
-    schema?: string
-  ): Promise<string[]> {
-    this.queryString = `SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '${tableName}' ${
-      schema ? `AND TABLE_SCHEMA = '${schema}'` : ""
-    };`;
+  private async getExistingColumns(tableName: string): Promise<string[]> {
+    this.queryString = `SHOW COLUMNS FROM ${tableName} `;
     const result = await this.execute();
-    return result.map((row: any) => row.COLUMN_NAME);
+    return result.map((row: any) => row.Field);
   }
-  private async convertNewColumns(model: Object, schema?: string) {
+
+  private async convertNewColumns(model: Object) {
     const propertyKeys = Object.getOwnPropertyNames(model);
     const columns = [];
 
     const existingColumns = await this.getExistingColumns(
-      model!.constructor.name,
-      schema
+      model!.constructor.name
     );
 
     const filterExistingColumns = propertyKeys.filter(
@@ -76,10 +71,10 @@ export class DefinitionQueriesServices implements DdlQueries {
     return columns;
   }
 
-  private extractDataFromModel(model: Object, alter?: boolean) {
+  private async extractDataFromModel(model: Object, alter?: boolean) {
     const propertyKeys = Object.getOwnPropertyNames(model);
     const columns = [];
-    const foreignKeys = new Set<string>(); // Utilizamos un Set para evitar claves duplicadas
+    const foreignKeys = new Set<string>();
 
     for (const key of propertyKeys) {
       const metadata: string = Reflect.getMetadata(`${key}`, model, key);
@@ -101,7 +96,7 @@ export class DefinitionQueriesServices implements DdlQueries {
     const { model, type, viewQuery, dbOrViewName, schema, newUser } = options;
 
     if (model && type == "TABLE") {
-      const columns = this.extractDataFromModel(model, false);
+      const columns = await this.extractDataFromModel(model, false);
       this.queryString = `CREATE ${type} ${schema ? schema + "." : ""}${
         model.constructor.name
       } (${columns});`;
@@ -147,7 +142,7 @@ export class DefinitionQueriesServices implements DdlQueries {
         code == "ER_TABLE_EXISTS_ERROR" ||
         message.includes("There is already an object named")
       ) {
-        const newColumns = await this.convertNewColumns(model!, schema);
+        const newColumns = await this.convertNewColumns(model!);
         if (newColumns.length > 0) {
           await this.alter({ columns: newColumns, model: model!, schema });
         }

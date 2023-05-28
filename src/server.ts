@@ -31,7 +31,7 @@ const { instance, registerSchemas } = new OctopusQL({
   credentials: mySqlKeys,
 });
 
-registerSchemas(instance, [new Customers(), new Orders(), new Shipments()]);
+registerSchemas( instance, [new Customers(), new Orders(), new Shipments()]);
 async function main() {
   const { query } = await instance;
   try {
