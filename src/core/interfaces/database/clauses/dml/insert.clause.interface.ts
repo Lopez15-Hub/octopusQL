@@ -1,5 +1,6 @@
 export interface InsertClause {
-    modelToUpdate:Object;
+    model:Function;
+    data:Function;
     schema?:string;
 
 }

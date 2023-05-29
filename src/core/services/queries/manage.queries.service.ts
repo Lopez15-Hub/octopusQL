@@ -58,14 +58,14 @@ export class ManageQueriesService implements DmlQueries {
     });
   }
   insert(options: InsertClause) {
-    const { modelToUpdate, schema } = options;
-    const columns = `(${Object.keys(modelToUpdate).join(",")})`;
-    const values = `(${Object.values(modelToUpdate)
+    const { model, data, schema } = options;
+    const columns = `(${Object.keys(data).join(",")})`;
+    const values = `(${Object.values(data)
       .map((val) => `'${val}'`)
       .join(",")})`;
-    this.queryString = `INSERT INTO ${
-      schema ? `${schema}.` : ""
-    }${"tablename"} ${columns} VALUES ${values}  `;
+    this.queryString = `INSERT INTO ${schema ? `${schema}.` : ""}${
+      model.constructor.name
+    } ${columns} VALUES ${values}  `;
     return new ConditionalsQueriesService({
       queryString: this.queryString,
       driver: this.driver,
