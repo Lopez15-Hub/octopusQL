@@ -1,6 +1,7 @@
+import { FromOptions } from "../../options/from.options.interface";
+
 export interface InsertClause {
-    model:Function;
-    data:Function;
-    schema?:string;
+    data:Object;
+    from:FromOptions;
 
 }

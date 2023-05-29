@@ -43,8 +43,8 @@ export class ManageQueriesService implements DmlQueries {
   }
 
   update(options: UpdateClause) {
-    const { from, model } = options;
-    const modelValues = Object.entries(model)
+    const { from, data } = options;
+    const modelValues = Object.entries(data)
       .map(([key, value]) => `${key} = '${value}'`)
       .join(", ");
 
@@ -58,13 +58,13 @@ export class ManageQueriesService implements DmlQueries {
     });
   }
   insert(options: InsertClause) {
-    const { model, data, schema } = options;
+    const { data, from } = options;
     const columns = `(${Object.keys(data).join(",")})`;
     const values = `(${Object.values(data)
       .map((val) => `'${val}'`)
       .join(",")})`;
-    this.queryString = `INSERT INTO ${schema ? `${schema}.` : ""}${
-      model.constructor.name
+    this.queryString = `INSERT INTO ${from.schema ? `${from.schema}.` : ""}${
+      from.table
     } ${columns} VALUES ${values}  `;
     return new ConditionalsQueriesService({
       queryString: this.queryString,
