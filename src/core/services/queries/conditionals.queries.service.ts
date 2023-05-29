@@ -1,6 +1,7 @@
 import { ConditionalsQueries } from "../../interfaces/adapters/queries/conditionals.queries.adapter.interface";
 import { JoinClause } from "../../interfaces/database/clauses/join.clause.interface";
 import { ConditionalOptions } from "../../interfaces/database/options/conditionals.options.interface";
+import { Order } from "../../types/database/order.type";
 import { ErrorService } from "../log/error.service";
 import { LogService } from "../log/log.service";
 import { LogicQueriesService } from "./logic.queries.service";
@@ -53,17 +54,17 @@ export default class ConditionalsQueriesService implements ConditionalsQueries {
 `;
     return this;
   }
-  groupBy(condition: string) {
-    this.queryString += `GROUP BY '${condition}' `;
+  groupBy(condition: string, order: Order) {
+    this.queryString += `GROUP BY ${condition} ${order ?? ""} `;
     return this;
   }
   like(pattern: string): this {
-    this.queryString += `LIKE '${pattern}'`;
+    this.queryString += `LIKE ${pattern}`;
     return this;
   }
 
-  orderBy(condition: string) {
-    this.queryString += `ORDER BY '${condition}' `;
+  orderBy(condition: string, order: Order) {
+    this.queryString += `ORDER BY '${condition} ${order ?? ""}' `;
     return this;
   }
   async execute(): Promise<any[]> {
