@@ -1,5 +1,8 @@
 import { LogicQueries } from "../../interfaces/adapters/queries/logic.queries.adapter.interface";
 import { LogicOptions } from "../../interfaces/database/options/logic.options.interface";
+import { Order } from "../../types/database/order.type";
+import { ErrorService } from "../log/error.service";
+import { LogService } from "../log/log.service";
 
 export class LogicQueriesService implements LogicQueries {
   private queryString: any;
@@ -10,22 +13,6 @@ export class LogicQueriesService implements LogicQueries {
     this.queryString = queryString;
     this.driver = driver;
     this.useMsDriver = useMsDriver;
-  }
-
-  async execute(): Promise<any[]> {
-    return new Promise((resolve, reject) => {
-      this.driver.query(this.queryString, (error: any, rows: any) => {
-        if (error) {
-          reject(error);
-          return;
-        }
-        if (this.useMsDriver) {
-          resolve(rows.recordset);
-        } else {
-          resolve(rows);
-        }
-      });
-    });
   }
 
   and(condition: string) {
@@ -53,5 +40,41 @@ export class LogicQueriesService implements LogicQueries {
   higherThan(condition: string): this {
     this.queryString = `${this.queryString} > '${condition}'`;
     return this;
+  }
+  groupBy(condition: string, order: Order) {
+    this.queryString += `GROUP BY ${condition} ${order ?? ""} `;
+    return this;
+  }
+  like(pattern: string): this {
+    this.queryString += `LIKE ${pattern}`;
+    return this;
+  }
+
+  orderBy(condition: string, order: Order) {
+    this.queryString += `ORDER BY '${condition} ${order ?? ""}' `;
+    return this;
+  }
+  async execute(): Promise<any[]> {
+    return new Promise((resolve, reject) => {
+      this.driver.query(this.queryString, (error: any, rows: any) => {
+        if (error) {
+          const { code } = error;
+          reject(error);
+          LogService.show({
+            message: `Executing: ${this.queryString}`,
+            type: "ERROR",
+          });
+          return ErrorService.factory(
+            "COND_EXEC_ERR",
+            `An ocurred error executing query, reason: ${code}`
+          );
+        }
+        if (this.useMsDriver) {
+          resolve(rows.recordset);
+        } else {
+          resolve(rows);
+        }
+      });
+    });
   }
 }

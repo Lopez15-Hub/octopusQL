@@ -55,16 +55,16 @@ export default class ConditionalsQueriesService implements ConditionalsQueries {
     return this;
   }
   groupBy(condition: string, order: Order) {
-    this.queryString += `GROUP BY ${condition} ${order ?? ""} `;
+    this.queryString += ` GROUP BY '${condition}' ${order ?? ""} `;
     return this;
   }
   like(pattern: string): this {
-    this.queryString += `LIKE ${pattern}`;
+    this.queryString += ` LIKE ${pattern}`;
     return this;
   }
 
   orderBy(condition: string, order: Order) {
-    this.queryString += `ORDER BY '${condition} ${order ?? ""}' `;
+    this.queryString += ` ORDER BY '${condition}' ${order ?? ""} `;
     return this;
   }
   async execute(): Promise<any[]> {
