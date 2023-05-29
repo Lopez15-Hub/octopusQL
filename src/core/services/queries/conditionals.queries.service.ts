@@ -1,6 +1,7 @@
 import { ConditionalsQueries } from "../../interfaces/adapters/queries/conditionals.queries.adapter.interface";
 import { JoinClause } from "../../interfaces/database/clauses/join.clause.interface";
 import { ConditionalOptions } from "../../interfaces/database/options/conditionals.options.interface";
+import { ErrorService } from "../log/error.service";
 import { LogService } from "../log/log.service";
 import { LogicQueriesService } from "./logic.queries.service";
 
@@ -52,13 +53,33 @@ export default class ConditionalsQueriesService implements ConditionalsQueries {
 `;
     return this;
   }
+  groupBy(condition: string) {
+    this.queryString += `GROUP BY '${condition}' `;
+    return this;
+  }
+  like(pattern: string): this {
+    this.queryString += `LIKE '${pattern}'`;
+    return this;
+  }
 
+  orderBy(condition: string) {
+    this.queryString += `ORDER BY '${condition}' `;
+    return this;
+  }
   async execute(): Promise<any[]> {
     return new Promise((resolve, reject) => {
       this.driver.query(this.queryString, (error: any, rows: any) => {
         if (error) {
+          const { code } = error;
           reject(error);
-          return LogService.show({ message: `${error}`, type: "ERROR" });
+          LogService.show({
+            message: `Executing: ${this.queryString}`,
+            type: "ERROR",
+          });
+          return ErrorService.factory(
+            "COND_EXEC_ERR",
+            `An ocurred error executing query, reason: ${code}`
+          );
         }
         if (this.useMsDriver) {
           resolve(rows.recordset);

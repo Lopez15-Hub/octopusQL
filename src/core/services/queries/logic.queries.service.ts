@@ -38,15 +38,6 @@ export class LogicQueriesService implements LogicQueries {
     return this;
   }
 
-  groupBy(condition: string) {
-    this.queryString = `${this.queryString} GROUP BY '${condition}' `;
-    return this;
-  }
-
-  orderBy(condition: string) {
-    this.queryString = `${this.queryString} ORDER BY '${condition}' `;
-    return this;
-  }
   lessThan(condition: string): this {
     this.queryString = `${this.queryString} < '${condition}'`;
     return this;
@@ -61,10 +52,6 @@ export class LogicQueriesService implements LogicQueries {
   }
   higherThan(condition: string): this {
     this.queryString = `${this.queryString} > '${condition}'`;
-    return this;
-  }
-  like(pattern: string): this {
-    this.queryString = `${this.queryString} LIKE '${pattern}'`;
     return this;
   }
 }
