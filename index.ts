@@ -1,5 +1,1 @@
-import { OctopusQL } from "./src/octopusQL";
-
-module.exports = {
-  OctopusQL,
-};
+export { OctopusQL } from "./src/octopusQL";
