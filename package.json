@@ -1,6 +1,6 @@
 {
   "name": "octopusql",
-  "version": "1.0.19",
+  "version": "1.0.20",
   "description": "Use your Relationals DB Easily.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
