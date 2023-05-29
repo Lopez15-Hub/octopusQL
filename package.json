@@ -1,6 +1,6 @@
 {
   "name": "octopusql",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Use your Relationals DB Easily.",
   "main": "index.js",
   "scripts": {

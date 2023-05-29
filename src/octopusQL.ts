@@ -1,18 +1,16 @@
 import "reflect-metadata";
-import {
-  DatabaseAdapter,
-  DatabaseKeys,
-  MySqlService,
-  QueriesAdapter,
-  SqlServerService,
-} from "./core/core";
+import { DatabaseAdapter, DatabaseKeys, QueriesAdapter } from "./core/core";
 import { OctopusOptions } from "./core/interfaces/app/octopus.options.interface";
 import { Driver } from "./core/types/drivers/drivers.types";
 import { PackageMetadata } from "./core/decorators/packageMetadata/packageMetada.decorator";
 import { ErrorService } from "./core/services/log/error.service";
 import { SqlModel } from "./core/interfaces/database/misc/sqlModel.interface";
+import {
+  MySqlService,
+  SqlServerService,
+} from "./core/services/drivers/driver.services";
 
-export class OctopusQL {
+class OctopusQL {
   instance: Promise<QueriesAdapter>;
   driverType: Driver;
   constructor(options: OctopusOptions) {
@@ -96,3 +94,7 @@ export class OctopusQL {
   }
   private startConnection = async (driver: DatabaseAdapter) => driver.connect();
 }
+
+module.exports = {
+  OctopusQL,
+};
