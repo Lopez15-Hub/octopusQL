@@ -10,7 +10,7 @@ import {
   SqlServerService,
 } from "./core/services/drivers/driver.services";
 
-class OctopusQL {
+export class OctopusQL {
   instance: Promise<QueriesAdapter>;
   driverType: Driver;
   constructor(options: OctopusOptions) {
@@ -95,6 +95,4 @@ class OctopusQL {
   private startConnection = async (driver: DatabaseAdapter) => driver.connect();
 }
 
-module.exports = {
-  OctopusQL,
-};
+
