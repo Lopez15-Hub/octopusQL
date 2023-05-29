@@ -1,9 +1,9 @@
-import { SqlServerService } from "../../core";
 import { OctopusTransaction } from "../../interfaces/adapters/database/transaction.adapter.interface";
 import { TransactionOptions } from "../../interfaces/database/options/transaction.options.interface";
 import { ErrorService } from "../log/error.service";
 import { LogService } from "../log/log.service";
 import { Transaction, ConnectionPool } from "mssql";
+import { SqlServerService } from "../services";
 export class MsTransaction implements OctopusTransaction {
   private connection: ConnectionPool;
   private operations: Promise<any>[];
