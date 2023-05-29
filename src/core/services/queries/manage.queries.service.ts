@@ -57,7 +57,6 @@ export class ManageQueriesService implements DmlQueries {
       useMsDriver: this.driverType == "mssql" ? true : false,
     });
   }
-  @NotImplemented
   insert(options: InsertClause) {
     const { modelToUpdate, schema } = options;
     const columns = `(${Object.keys(modelToUpdate).join(",")})`;
