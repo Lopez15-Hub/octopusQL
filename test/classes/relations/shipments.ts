@@ -4,7 +4,7 @@ import { SqlModel } from "../../../src/core/interfaces/database/misc/sqlModel.in
 import { Orders } from "./orders";
 
 export class Shipments extends SqlModel {
-  @SqlColumn({ type: "INT", pk: true, autoIncrement: true, length: 10 })
+  @SqlColumn({ type: "INT", pk: true, identity: true })
   shipmentID: number = 0;
 
   @RelatedTo({ type: "INT", model: Orders })

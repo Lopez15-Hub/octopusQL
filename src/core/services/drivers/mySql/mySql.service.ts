@@ -6,6 +6,7 @@ import {
 } from "../../../interfaces/interfaces";
 import MySqlEnviroment from "../../../enviroments/database/mySql/mySql.enviroment";
 import { LogService } from "../../log/log.service";
+import { ErrorService } from "../../log/error.service";
 
 export default class MySqlService implements DatabaseAdapter {
   driver: mysql.Connection;
@@ -31,16 +32,17 @@ export default class MySqlService implements DatabaseAdapter {
   async connect() {
     try {
       this.driver.connect();
+      this.driver.state;
       LogService.show({
         message: `Connected to database`,
         type: "SUCCESS",
       });
     } catch (error: any) {
       const { code } = error;
-      LogService.show({
-        message: `An ocurred error connecting to database: ${code}`,
-        type: "SUCCESS",
-      });
+      ErrorService.factory(
+        "MYSQL_ERR_CONN",
+        `An ocurred error connecting to database reason: ${code}`
+      );
     }
   }
 

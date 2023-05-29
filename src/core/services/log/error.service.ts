@@ -10,6 +10,6 @@ export class ErrorService extends Error {
       message: debugMessage ?? reason,
       type: "ERROR",
     });
-    return new ErrorService(reason);
+    throw new ErrorService(reason);
   }
 }

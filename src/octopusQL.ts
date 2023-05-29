@@ -65,7 +65,11 @@ export class OctopusQL {
     }
     if (driverType == "mssql") {
       const mssql = new SqlServerService(credentials!);
-      await this.startConnection(mssql);
+      try {
+        await this.startConnection(mssql);
+      } catch (error: any) {
+        throw ErrorService.factory("MSSQL_CONN_ERR", error);
+      }
       return mssql.instance;
     } else {
       try {

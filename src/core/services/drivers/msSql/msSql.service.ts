@@ -3,6 +3,7 @@ import { DatabaseAdapter } from "../../../interfaces/adapters/database/database.
 import QueriesService from "../../queries/queries.service";
 import MsSqlEnviroment from "../../../enviroments/database/msSql/msSql.enviroment";
 import { LogService } from "../../log/log.service";
+import { ErrorService } from "../../log/error.service";
 
 export default class SqlServerService implements DatabaseAdapter {
   driver: ConnectionPool;
@@ -11,9 +12,12 @@ export default class SqlServerService implements DatabaseAdapter {
     this.driver = new ConnectionPool({
       user: keys.user,
       password: keys.password,
-      server: keys.host ?? "",
+      server: keys.host!,
       database: keys.database,
+      pool: keys.msPool,
+      options: keys.msOptions,
     });
+
     this.instance = new QueriesService({
       driver: new Request(this.driver),
       driverType: "mssql",
@@ -25,17 +29,21 @@ export default class SqlServerService implements DatabaseAdapter {
 
   async connect() {
     try {
-      await this.driver.connect();
-      LogService.show({
-        message: `Connected to database ${this.keys.database}`,
-        type: "SUCCESS",
-      });
+      const response = await this.driver.connect();
+
+      if (response.connected) {
+        console.log(response);
+        LogService.show({
+          message: `Connected to database ${this.keys.database}`,
+          type: "SUCCESS",
+        });
+      }
     } catch (error: any) {
       const { code } = error;
-      LogService.show({
-        message: `An ocurred error connecting to database: ${code}`,
-        type: "SUCCESS",
-      });
+      ErrorService.factory(
+        "ERR_CONN_FAIL",
+        `Connect to database failed reason: ${code}`
+      );
     }
   }
 }
