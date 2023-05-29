@@ -41,8 +41,8 @@ export class LogicQueriesService implements LogicQueries {
     this.queryString = `${this.queryString} > '${condition}'`;
     return this;
   }
-  groupBy(condition: string, order: Order) {
-    this.queryString += `GROUP BY ${condition} ${order ?? ""} `;
+  groupBy(condition: string) {
+    this.queryString += `GROUP BY ${condition} `;
     return this;
   }
   like(pattern: string): this {
@@ -51,7 +51,7 @@ export class LogicQueriesService implements LogicQueries {
   }
 
   orderBy(condition: string, order: Order) {
-    this.queryString += `ORDER BY '${condition} ${order ?? ""}' `;
+    this.queryString += `ORDER BY '${condition}' ${order ?? ""} `;
     return this;
   }
   async execute(): Promise<any[]> {

@@ -54,8 +54,8 @@ export default class ConditionalsQueriesService implements ConditionalsQueries {
 `;
     return this;
   }
-  groupBy(condition: string, order: Order) {
-    this.queryString += ` GROUP BY '${condition}' ${order ?? ""} `;
+  groupBy(condition: string) {
+    this.queryString += ` GROUP BY '${condition}' `;
     return this;
   }
   like(pattern: string): this {
