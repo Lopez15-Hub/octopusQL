@@ -1,6 +1,6 @@
 {
   "name": "octopusql",
-  "version": "1.0.20",
+  "version": "1.0.21",
   "description": "Use your Relationals DB Easily.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -23,6 +23,7 @@
     "typescript": "^5.0.4"
   },
   "dependencies": {
+    "find-up": "^6.3.0",
     "mssql": "^9.1.1",
     "mysql": "^2.18.1",
     "reflect-metadata": "^0.1.13"

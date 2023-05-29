@@ -1,21 +1,32 @@
 import * as fs from "fs";
+import { findUp } from "find-up";
 import { Package } from "./src/core/interfaces/app/package.interface";
-const productionEnabled = true;
-const filePath = productionEnabled ? "../package.json" : "./package.json";
 
 export function readJSONFile(): Promise<Package> {
-  return new Promise((resolve, reject) => {
-    fs.readFile(filePath, "utf8", (err, data) => {
-      if (err) {
-        reject(err);
-        return;
-      }
+  const filePath = "package.json";
 
-      try {
-        const jsonData = JSON.parse(data);
-        resolve(jsonData);
-      } catch (error) {
-        reject(error);
+  return new Promise((resolve, reject) => {
+    findUp(filePath).then((packageJsonPath) => {
+      if (packageJsonPath) {
+        fs.readFile(packageJsonPath, "utf8", (err, data) => {
+          if (err) {
+            reject(err);
+            return;
+          }
+
+          try {
+            const jsonData = JSON.parse(data);
+            resolve(jsonData);
+          } catch (error) {
+            reject(error);
+          }
+        });
+      } else {
+        reject(
+          new Error(
+            "El archivo package.json no se encontró en el árbol de directorios."
+          )
+        );
       }
     });
   });
