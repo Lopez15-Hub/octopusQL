@@ -1,4 +1,3 @@
-import "reflect-metadata";
 import { RelatedToProps } from "../../interfaces/decorators/relatedTo.decorator.props";
 
 export function RelatedTo(options: RelatedToProps) {

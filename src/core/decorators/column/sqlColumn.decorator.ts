@@ -1,4 +1,3 @@
-import "reflect-metadata";
 import { SqlColumnProps } from "../../interfaces/decorators/sqlColumn.decorator.props";
 import { ErrorService } from "../../services/log/error.service";
 

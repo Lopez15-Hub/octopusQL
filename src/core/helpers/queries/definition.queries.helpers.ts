@@ -1,4 +1,3 @@
-import "reflect-metadata";
 import { CreateClause } from "../../interfaces/database/clauses/create.clause.interface";
 import { LogService } from "../../services/log/log.service";
 import { DefinitionQueriesServices } from "../../services/queries/definition.queries.service";

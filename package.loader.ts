@@ -1,6 +1,7 @@
 import * as fs from "fs";
 import { Package } from "./src/core/interfaces/app/package.interface";
-const filePath = "./package.json";
+const productionEnabled = true;
+const filePath = productionEnabled ? "../package.json" : "./package.json";
 
 export function readJSONFile(): Promise<Package> {
   return new Promise((resolve, reject) => {

@@ -1,3 +1,7 @@
-# Ignorar todos los archivos y carpetas, excepto la carpeta dist
+
 *
 !dist/
+
+dist/*
+!dist/**/*
+!dist/src/

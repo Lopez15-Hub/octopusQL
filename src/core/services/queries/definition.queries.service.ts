@@ -1,4 +1,3 @@
-import "reflect-metadata";
 import { DdlQueries } from "../../interfaces/adapters/queries/ddl.queries.adapter.interface";
 import { AlterClause } from "../../interfaces/database/clauses/alter.clause.interface";
 import { CreateClause } from "../../interfaces/database/clauses/create.clause.interface";

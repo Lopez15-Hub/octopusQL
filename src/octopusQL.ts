@@ -94,5 +94,3 @@ export class OctopusQL {
   }
   private startConnection = async (driver: DatabaseAdapter) => driver.connect();
 }
-
-
