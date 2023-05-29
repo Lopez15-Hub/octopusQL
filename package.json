@@ -1,7 +1,7 @@
 {
   "name": "octopusql",
-  "version": "1.0.0",
-  "description": "Manage your DB with Octupus.",
+  "version": "1.0.1",
+  "description": "Use your Relationals DB Easily.",
   "main": "index.js",
   "scripts": {
     "start": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/server.ts",

@@ -6,6 +6,7 @@ import { QueriesOptions } from "../../interfaces/database/options/queries.option
 import { DeleteClause } from "../../interfaces/database/clauses/dml/delete.clause.interface";
 import { NotImplemented } from "../../decorators/notImplemented/notImplemented.decorator";
 import { UpdateClause } from "../../interfaces/database/clauses/dml/update.clause.interface";
+import { InsertClause } from "../../interfaces/database/clauses/dml/insert.clause.interface";
 
 export class ManageQueriesService implements DmlQueries {
   private queryString: any;
@@ -57,15 +58,15 @@ export class ManageQueriesService implements DmlQueries {
     });
   }
   @NotImplemented
-  insert(data: Object) {
-    const columns = `(${Object.keys(data).join(",")})`;
-    const values = `(${Object.values(data)
+  insert(options: InsertClause) {
+    const { modelToUpdate, schema } = options;
+    const columns = `(${Object.keys(modelToUpdate).join(",")})`;
+    const values = `(${Object.values(modelToUpdate)
       .map((val) => `'${val}'`)
       .join(",")})`;
-    // todo: Complete insert
     this.queryString = `INSERT INTO ${
-      "HERE SCHEMA CONDITION" ? "dbo" : ""
-    }.${"tablename"} ${columns} VALUES ${values}  `;
+      schema ? `${schema}.` : ""
+    }${"tablename"} ${columns} VALUES ${values}  `;
     return new ConditionalsQueriesService({
       queryString: this.queryString,
       driver: this.driver,

@@ -1,1 +1,5 @@
-export interface InsertClause {}
+export interface InsertClause {
+    modelToUpdate:Object;
+    schema?:string;
+
+}
