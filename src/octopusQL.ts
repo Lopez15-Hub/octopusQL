@@ -66,7 +66,14 @@ export class OctopusQL {
       try {
         await this.startConnection(mssql);
       } catch (error: any) {
-        throw ErrorService.factory("MSSQL_CONN_ERR", error);
+        if (error.includes("unable to verify the first certificate")) {
+          throw ErrorService.factory(
+            "MSSQL_SSL_ERR",
+            "Unable to verify the first certificate. Please enable trustServerCertificate if you trust in this server."
+          );
+        } else {
+          throw ErrorService.factory("MSSQL_CONN_ERR", error);
+        }
       }
       return mssql.instance;
     } else {

@@ -41,6 +41,7 @@ export default class SqlServerService implements DatabaseAdapter {
       }
     } catch (error: any) {
       const { code } = error;
+      console.log(error);
       ErrorService.factory(
         "ERR_CONN_FAIL",
         `Connect to database failed reason: ${code}`
