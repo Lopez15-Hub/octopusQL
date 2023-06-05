@@ -13,6 +13,7 @@ export default class SqlServerService implements DatabaseAdapter {
       user: keys.user,
       password: keys.password,
       server: keys.host!,
+      domain: keys.domain,
       database: keys.database,
       pool: keys.msPool,
       options: keys.msOptions,

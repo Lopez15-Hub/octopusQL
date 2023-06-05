@@ -1,6 +1,6 @@
 {
   "name": "octopusql",
-  "version": "1.0.28",
+  "version": "1.0.29",
   "description": "Use your Relationals DB Easily.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -8,7 +8,7 @@
     "dev": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' npm index.ts",
     "start": "nodemon --watch dist/index.js",
     "build": "tsc",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "nodemon --watch '__test__/**/*.ts' --exec 'ts-node' index.ts"
   },
   "keywords": [],
   "author": "Ezequiel López",

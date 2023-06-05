@@ -1,8 +1,10 @@
-import { DatabaseKeys } from '../../../interfaces/database/database.interface';
-import { MsSqlOptions } from '../../../interfaces/database/keys/msSqlOptions.interface';
+import { DatabaseKeys } from "../../../interfaces/database/database.interface";
+import { MsSqlOptions } from "../../../interfaces/database/keys/msSqlOptions.interface";
 
 export default class MsSqlEnviroment implements DatabaseKeys {
   host: string | undefined;
+
+  domain?: string | undefined;
 
   database: string | undefined;
 
@@ -24,5 +26,6 @@ export default class MsSqlEnviroment implements DatabaseKeys {
     this.password = keys.password;
     this.port = keys.port;
     this.user = keys.user;
+    this.domain = keys.domain;
   }
 }
