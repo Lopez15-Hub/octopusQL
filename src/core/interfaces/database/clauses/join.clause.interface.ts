@@ -1,5 +1,5 @@
 export interface JoinClause {
-  modelFrom: Function;
-  modelTo: Function;
+  modelFrom: string;
+  modelTo: string;
   key: string;
 }

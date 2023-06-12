@@ -26,31 +26,28 @@ export default class ConditionalsQueriesService implements ConditionalsQueries {
   }
   join(options: JoinClause): this {
     const { key, modelFrom, modelTo } = options;
-    const { name: modelFromName } = modelFrom;
-    const { name: modelToName } = modelTo;
+
     this.queryString += ` 
-    JOIN ${modelToName} 
-    ON ${modelToName}.${key} = ${modelFromName}.${key};
+    JOIN ${modelTo} 
+    ON ${modelTo}.${key} = ${modelFrom}.${key};
 `;
     return this;
   }
   leftJoin(options: JoinClause): this {
     const { key, modelFrom, modelTo } = options;
-    const { name: modelFromName } = modelFrom;
-    const { name: modelToName } = modelTo;
+
     this.queryString += ` 
-    LEFT JOIN ${modelToName} 
-    ON ${modelToName}.${key} = ${modelFromName}.${key};
+    LEFT JOIN ${modelTo} 
+    ON ${modelTo}.${key} = ${modelFrom}.${key};
 `;
     return this;
   }
   rightJoin(options: JoinClause): this {
     const { key, modelFrom, modelTo } = options;
-    const { name: modelFromName } = modelFrom;
-    const { name: modelToName } = modelTo;
+
     this.queryString += ` 
-    RIGHT JOIN ${modelToName} 
-    ON ${modelToName}.${key} = ${modelFromName}.${key};
+    RIGHT JOIN ${modelTo} 
+    ON ${modelFrom}.${key} = ${modelFrom}.${key};
 `;
     return this;
   }

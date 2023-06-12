@@ -7,6 +7,8 @@ import { DeleteClause } from "../../interfaces/database/clauses/dml/delete.claus
 import { NotImplemented } from "../../decorators/notImplemented/notImplemented.decorator";
 import { UpdateClause } from "../../interfaces/database/clauses/dml/update.clause.interface";
 import { InsertClause } from "../../interfaces/database/clauses/dml/insert.clause.interface";
+import { LogService } from "../log/log.service";
+import { ErrorService } from "../log/error.service";
 
 export class ManageQueriesService implements DmlQueries {
   private queryString: any;
@@ -20,11 +22,13 @@ export class ManageQueriesService implements DmlQueries {
   }
 
   select(options: SelectClause) {
-    const { model, values, useDistinct, schema } = options;
-    const tableName = model.name;
+    const { from, values, useDistinct } = options;
+    const tableName = from.table;
     this.queryString = `SELECT ${
       useDistinct ? "DISTINCT" : ""
-    } ${values} FROM ${schema ? schema + "." + tableName : tableName}`;
+    } ${values} FROM ${
+      from.schema ? from.schema + "." + tableName : tableName
+    }`;
     return new ConditionalsQueriesService({
       queryString: this.queryString,
       driver: this.driver,
@@ -71,6 +75,33 @@ export class ManageQueriesService implements DmlQueries {
       driver: this.driver,
       useMsDriver: this.driverType == "mssql" ? true : false,
     });
+  }
+  async execute(): Promise<any[]> {
+    return new Promise((resolve, reject) => {
+      this.driver.query(this.queryString, (error: any, rows: any) => {
+        if (error) {
+          const { code } = error;
+          reject(error);
+          LogService.show({
+            message: `Executing: ${this.queryString}`,
+            type: "ERROR",
+          });
+          return ErrorService.factory(
+            "COND_EXEC_ERR",
+            `An ocurred error executing query, reason: ${code}`
+          );
+        }
+        if (this.driverType == "mssql") {
+          resolve(rows.recordset);
+        } else {
+          resolve(rows);
+        }
+      });
+    });
+  }
+  async custom(query: string) {
+    this.queryString += query;
+    return await this.execute();
   }
   @NotImplemented
   merge() {

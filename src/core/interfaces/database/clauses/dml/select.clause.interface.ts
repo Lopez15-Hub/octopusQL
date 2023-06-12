@@ -1,6 +1,7 @@
+import { FromOptions } from "../../options/from.options.interface";
+
 export interface SelectClause {
-  model: Function;
+  from: FromOptions;
   values: string;
-  schema?: string;
   useDistinct?: boolean;
 }
