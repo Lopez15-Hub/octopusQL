@@ -12,4 +12,5 @@ export interface DmlQueries {
   merge(): ConditionalsQueriesService;
   explainPlan(): ConditionalsQueriesService;
   lockTable(): ConditionalsQueriesService;
+  custom(queryString: string): Promise<any>;
 }
