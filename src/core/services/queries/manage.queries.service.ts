@@ -100,7 +100,7 @@ export class ManageQueriesService implements DmlQueries {
     });
   }
   async custom(query: string) {
-    this.queryString += query;
+    this.queryString = query;
     return await this.execute();
   }
   @NotImplemented
